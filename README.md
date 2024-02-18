@@ -7,4 +7,4 @@
 <!-- ![Game Turbo](https://img.shields.io/badge/Game-Turbo-blue) -->
 # Target Medal
 
-Notifies you when you get a specified target medal/time.
+Notifies you when you get a specified target medal/time. Split off from the Campaign Completionist plugin.
