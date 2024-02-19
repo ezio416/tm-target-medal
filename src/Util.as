@@ -25,8 +25,18 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
 
     uint target = times[int(S_Medal)];
 
+    vec4 colorNotif;
+
+    switch (S_Medal) {
+        case Medal::Author: colorNotif = vec4(S_ColorAuthor.x, S_ColorAuthor.y, S_ColorAuthor.z, 0.8f); break;
+        case Medal::Gold:   colorNotif = vec4(S_ColorGold.x,   S_ColorGold.y,   S_ColorGold.z,   0.8f); break;
+        case Medal::Silver: colorNotif = vec4(S_ColorSilver.x, S_ColorSilver.y, S_ColorSilver.z, 0.8f); break;
+        case Medal::Bronze: colorNotif = vec4(S_ColorBronze.x, S_ColorBronze.y, S_ColorAuthor.z, 0.8f); break;
+        default:            colorNotif = vec4(S_ColorCustom.x, S_ColorCustom.y, S_ColorCustom.z, 0.8f);
+    }
+
     if (pb <= target)
-        UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved");
+        UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
     else
         UI::ShowNotification(title, "Bummer! You still need " + Time::Format(pb - target) + " for the " + tostring(S_Medal) + " medal");
 }

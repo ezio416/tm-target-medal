@@ -37,13 +37,21 @@ void Main() {
         }
 
         if (!wasInMap) {
-            currentAuthor = Time::Format(App.RootMap.TMObjective_AuthorTime);
-            currentGold   = Time::Format(App.RootMap.TMObjective_GoldTime);
-            currentSilver = Time::Format(App.RootMap.TMObjective_SilverTime);
-            currentBronze = Time::Format(App.RootMap.TMObjective_BronzeTime);
             pb = OnEnteredMap();
             wasInMap = true;
         }
+
+        if (currentAuthor.Length == 0)
+            currentAuthor = Time::Format(App.RootMap.TMObjective_AuthorTime);
+
+        if (currentGold.Length == 0)
+            currentGold   = Time::Format(App.RootMap.TMObjective_GoldTime);
+
+        if (currentSilver.Length == 0)
+            currentSilver = Time::Format(App.RootMap.TMObjective_SilverTime);
+
+        if (currentBronze.Length == 0)
+            currentBronze = Time::Format(App.RootMap.TMObjective_BronzeTime);
 
         if (!S_Enabled)
             continue;

@@ -19,12 +19,12 @@ Medal S_Medal = Medal::Author;
 uint S_CustomTarget = 0;
 
 
-[Setting category="Colors" name="Author"]
+[Setting category="Colors" name="Author" color]
 vec3 S_ColorAuthor = vec3(0.17f, 0.75f, 0.0f);
 string colorAuthor;
 
 [Setting category="Colors" name="Gold" color]
-vec3 S_ColorGold = vec3(1.0f, 0.97f, 0.0f);
+vec3 S_ColorGold = vec3(1.0f, 0.87f, 0.0f);
 string colorGold;
 
 [Setting category="Colors" name="Silver" color]
