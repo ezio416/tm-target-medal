@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-02-18
+// m 2024-02-22
 
 string       currentAuthor;
 string       currentBronze;
@@ -69,7 +69,9 @@ void Main() {
         )
             continue;
 
-        for (uint i = 0; i < 20; i++)
+        uint yieldFrames = App.PlaygroundScript is null ? 50 : 20;
+
+        for (uint i = 0; i < yieldFrames; i++)
             yield();  // allow game to process PB
 
         const uint prevTime = pb;
