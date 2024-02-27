@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-02-18
+// m 2024-02-27
 
 void HoverTooltip(const string &in msg) {
     if (!UI::IsItemHovered())
@@ -24,6 +24,9 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
         return;
 
     uint target = times[int(S_Medal)];
+
+    if (prevTime <= target)
+        return;
 
     vec4 colorNotif;
 
