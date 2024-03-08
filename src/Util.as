@@ -52,7 +52,7 @@ uint OnEnteredMap() {
     if (App.UserManagerScript is null || App.UserManagerScript.Users.Length == 0)
         return 0;
 
-    const uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", "TimeAttack", "");
+    uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", "TimeAttack", "");
 
     if (best == uint(-1))
         best = 0;
