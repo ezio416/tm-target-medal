@@ -1,12 +1,12 @@
 // c 2024-02-18
-// m 2024-02-27
+// m 2024-03-08
 
 void HoverTooltip(const string &in msg) {
     if (!UI::IsItemHovered())
         return;
 
     UI::BeginTooltip();
-    UI::Text(msg);
+        UI::Text(msg);
     UI::EndTooltip();
 }
 
@@ -23,7 +23,7 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
     if (prevTime > 0 && pb >= prevTime)
         return;
 
-    uint target = times[int(S_Medal)];
+    const uint target = times[int(S_Medal)];
 
     if (prevTime <= target)
         return;
@@ -52,7 +52,7 @@ uint OnEnteredMap() {
     if (App.UserManagerScript is null || App.UserManagerScript.Users.Length == 0)
         return 0;
 
-    uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", "TimeAttack", "");
+    const uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", "TimeAttack", "");
 
     if (best == uint(-1))
         best = 0;

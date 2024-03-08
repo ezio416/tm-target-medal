@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-02-22
+// m 2024-03-08
 
 string       currentAuthor;
 string       currentBronze;
@@ -69,8 +69,7 @@ void Main() {
         )
             continue;
 
-        uint yieldFrames = App.PlaygroundScript is null ? 50 : 20;
-
+        const uint yieldFrames = App.PlaygroundScript is null ? 50 : 20;
         for (uint i = 0; i < yieldFrames; i++)
             yield();  // allow game to process PB
 
@@ -94,8 +93,8 @@ void Main() {
 
         try {
             while (
-                CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::Finish ||
-                CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::EndRound
+                CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::Finish
+                || CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::EndRound
             )
                 yield();
         } catch { }
@@ -152,9 +151,11 @@ void Render() {
         return;
 
     UI::Begin(title + " - Custom Time", S_CustomWindow, UI::WindowFlags::AlwaysAutoResize);
-        uint pre = S_CustomTarget;
+        const uint pre = S_CustomTarget;
+
         S_CustomTarget = UI::InputInt("time in ms", S_CustomTarget);
-        if (pre != S_CustomTarget)
+
+        if (S_CustomTarget != pre)
             OnSettingsChanged();
 
         UI::Text("Chosen target time: " + currentCustom);
