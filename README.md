@@ -8,3 +8,5 @@ Notifies you when you get a specified target medal/time. Split off from the Camp
 
 <!-- ![Game Maniaplanet](https://img.shields.io/badge/Game-Maniaplanet_4-blue) -->
 <!-- ![Game Turbo](https://img.shields.io/badge/Game-Turbo-blue) -->
+
+![image](images/target-medal.png)
