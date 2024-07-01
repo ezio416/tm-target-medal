@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-02-18
+// m 2024-07-01
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = true;
@@ -15,7 +15,7 @@ enum Medal {
 [Setting category="General" name="Medal target"]
 Medal S_Medal = Medal::Author;
 
-[Setting category="General" name="Custom time target (ms)" description="Must choose 'Custom' in above setting"]
+[Setting category="General" name="Custom time target (ms)" description="Must choose 'Custom' in above setting. For stunts mode, this is the score."]
 uint S_CustomTarget = 0;
 
 
