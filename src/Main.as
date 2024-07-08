@@ -1,23 +1,27 @@
 // c 2024-02-18
-// m 2024-03-08
+// m 2024-07-01
 
 string       currentAuthor;
 string       currentBronze;
 string       currentCustom;
 string       currentGold;
 string       currentSilver;
-uint         pb    = 0;
+uint         pb     = 0;
+bool         stunts = false;
 string       targetText;
-const string title = "\\$FC0" + Icons::Circle + "\\$G Target Medal";
+const string title  = "\\$FC0" + Icons::Circle + "\\$G Target Medal";
 
 void Main() {
     bool inMap;
     bool wasInMap = InMap();
 
-    if (wasInMap)
-        pb = OnEnteredMap();
-
     CTrackMania@ App = cast<CTrackMania@>(GetApp());
+    CGameCtnChallenge@ Map = App.RootMap;
+
+    if (wasInMap) {
+        stunts = string(Map.MapType) == "TrackMania\\TM_Stunt";
+        pb = OnEnteredMap();
+    }
 
     OnSettingsChanged();
 
@@ -32,26 +36,30 @@ void Main() {
             currentSilver = "";
             currentBronze = "";
             pb = 0;
+            stunts = false;
             wasInMap = false;
             continue;
         }
 
+        @Map = App.RootMap;
+
         if (!wasInMap) {
+            stunts = string(Map.MapType) == "TrackMania\\TM_Stunt";
             pb = OnEnteredMap();
             wasInMap = true;
         }
 
         if (currentAuthor.Length == 0)
-            currentAuthor = Time::Format(App.RootMap.TMObjective_AuthorTime);
+            currentAuthor = stunts ? tostring(Map.TMObjective_AuthorTime) : Time::Format(Map.TMObjective_AuthorTime);
 
         if (currentGold.Length == 0)
-            currentGold   = Time::Format(App.RootMap.TMObjective_GoldTime);
+            currentGold   = stunts ? tostring(Map.TMObjective_GoldTime) : Time::Format(Map.TMObjective_GoldTime);
 
         if (currentSilver.Length == 0)
-            currentSilver = Time::Format(App.RootMap.TMObjective_SilverTime);
+            currentSilver = stunts ? tostring(Map.TMObjective_SilverTime) : Time::Format(Map.TMObjective_SilverTime);
 
         if (currentBronze.Length == 0)
-            currentBronze = Time::Format(App.RootMap.TMObjective_BronzeTime);
+            currentBronze = stunts ? tostring(Map.TMObjective_BronzeTime) : Time::Format(Map.TMObjective_BronzeTime);
 
         if (!S_Enabled)
             continue;
@@ -59,33 +67,41 @@ void Main() {
         CTrackManiaNetwork@ Network = cast<CTrackManiaNetwork@>(App.Network);
         CGameManiaAppPlayground@ CMAP = Network.ClientManiaAppPlayground;
 
-        if (
-            CMAP is null
+        if (false
+            || CMAP is null
             || CMAP.ScoreMgr is null
             || CMAP.UI is null
-            || CMAP.UI.UISequence != CGamePlaygroundUIConfig::EUISequence::Finish
+            || (!stunts && CMAP.UI.UISequence != CGamePlaygroundUIConfig::EUISequence::Finish)
+            || (stunts && CMAP.UI.UISequence != CGamePlaygroundUIConfig::EUISequence::UIInteraction)
             || App.UserManagerScript is null
             || App.UserManagerScript.Users.Length == 0
         )
             continue;
 
-        const uint yieldFrames = App.PlaygroundScript is null ? 50 : 20;
-        for (uint i = 0; i < yieldFrames; i++)
-            yield();  // allow game to process PB
-
         const uint prevTime = pb;
 
-        pb = CMAP.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", "TimeAttack", "");
+        sleep(500);  // allow game to process PB, 500ms should be enough time
+
+        if (false
+            || CMAP is null
+            || CMAP.ScoreMgr is null
+            || App.UserManagerScript is null
+            || App.UserManagerScript.Users.Length == 0
+        )
+            return;
+
+        pb = CMAP.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, Map.EdChallengeId, "PersonalBest", "", stunts ? "Stunt" : "TimeAttack", "");
         if (pb == uint(-1)) {
+            warn("pb is 0");
             pb = 0;
             continue;
         }
 
         const uint[] times = {
-            App.RootMap.TMObjective_AuthorTime,
-            App.RootMap.TMObjective_GoldTime,
-            App.RootMap.TMObjective_SilverTime,
-            App.RootMap.TMObjective_BronzeTime,
+            Map.TMObjective_AuthorTime,
+            Map.TMObjective_GoldTime,
+            Map.TMObjective_SilverTime,
+            Map.TMObjective_BronzeTime,
             S_CustomTarget
         };
 
@@ -102,7 +118,7 @@ void Main() {
 }
 
 void OnSettingsChanged() {
-    currentCustom = Time::Format(S_CustomTarget);
+    currentCustom = stunts ? tostring(S_CustomTarget) : Time::Format(S_CustomTarget);
 
     colorAuthor = Text::FormatOpenplanetColor(S_ColorAuthor);
     colorGold   = Text::FormatOpenplanetColor(S_ColorGold);
@@ -150,14 +166,16 @@ void Render() {
     if (!S_CustomWindow)
         return;
 
-    UI::Begin(title + " - Custom Time", S_CustomWindow, UI::WindowFlags::AlwaysAutoResize);
+    if (UI::Begin(title + " - Custom Time", S_CustomWindow, UI::WindowFlags::AlwaysAutoResize)) {
         const uint pre = S_CustomTarget;
 
-        S_CustomTarget = UI::InputInt("time in ms", S_CustomTarget);
+        S_CustomTarget = UI::InputInt(stunts ? "score" : "time in ms", S_CustomTarget);
 
         if (S_CustomTarget != pre)
             OnSettingsChanged();
 
-        UI::Text("Chosen target time: " + currentCustom);
+        UI::Text("Chosen target " + (stunts ? "score" : "time") + ": " + currentCustom);
+    }
+
     UI::End();
 }

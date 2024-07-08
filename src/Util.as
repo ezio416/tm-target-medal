@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-03-08
+// m 2024-07-01
 
 void HoverTooltip(const string &in msg) {
     if (!UI::IsItemHovered())
@@ -20,12 +20,21 @@ bool InMap() {
 }
 
 void Notify(const uint prevTime, const uint pb, const uint[] times) {
-    if (prevTime > 0 && pb >= prevTime)
+    if (true
+        && prevTime > 0
+        && (false
+            || !stunts && pb >= prevTime
+            || stunts && pb <= prevTime
+        )
+    )
         return;
 
     const uint target = times[int(S_Medal)];
 
-    if (prevTime <= target)
+    if (false
+        || (!stunts && prevTime <= target)
+        || (stunts && prevTime >= target)
+    )
         return;
 
     vec4 colorNotif;
@@ -38,10 +47,10 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
         default:            colorNotif = vec4(S_ColorCustom.x, S_ColorCustom.y, S_ColorCustom.z, 0.8f);
     }
 
-    if (pb <= target)
+    if ((!stunts && pb <= target) || (stunts && pb >= target))
         UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
     else
-        UI::ShowNotification(title, "Bummer! You still need " + Time::Format(pb - target) + " for the " + tostring(S_Medal) + " medal");
+        UI::ShowNotification(title, "Bummer! You still need " + (stunts ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
 }
 
 uint OnEnteredMap() {
@@ -52,12 +61,12 @@ uint OnEnteredMap() {
     if (App.UserManagerScript is null || App.UserManagerScript.Users.Length == 0)
         return 0;
 
-    uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", "TimeAttack", "");
+    uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", stunts ? "Stunt" : "TimeAttack", "");
 
     if (best == uint(-1))
         best = 0;
 
-    trace("PB: " + Time::Format(best));
+    trace("PB: " + (stunts ? tostring(best) : Time::Format(best)));
 
     return best;
 }
