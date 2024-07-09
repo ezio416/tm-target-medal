@@ -108,9 +108,11 @@ void Main() {
             S_CustomTarget
         };
 
+#if DEPENDENCY_CHAMPIONMEDALS
         const uint cm = ChampionMedal();
         if (cm > 0)
             times.InsertAt(0, cm);
+#endif
 
         Notify(prevTime, pb, times);
 
