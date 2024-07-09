@@ -130,7 +130,11 @@ void OnSettingsChanged() {
     currentCustom = stunt ? tostring(S_CustomTarget) : Time::Format(S_CustomTarget);
 
 #if DEPENDENCY_CHAMPIONMEDALS
-    if (S_Medal == Medal::Champion && ChampionMedal() == 0) {
+    if (true
+        && S_Medal == Medal::Champion
+        && ChampionMedal() == 0
+        && cast<CTrackMania@>(GetApp()).ActiveMenus.Length == 0
+    ) {
         S_Medal = Medal::Author;
         currentChampion = "";
     }
