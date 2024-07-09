@@ -1,5 +1,31 @@
 // c 2024-02-18
-// m 2024-07-01
+// m 2024-07-08
+
+uint ChampionMedal() {
+    Meta::Plugin@ plugin = Meta::GetPluginFromID("ChampionMedals");
+    if (plugin is null || !plugin.Enabled)
+        return 0;
+
+    return ChampionMedals::GetCMTime();
+}
+
+uint GetPB(CGameCtnChallenge@ Map) {
+    CTrackMania@ App = cast<CTrackMania@>(GetApp());
+    CTrackManiaNetwork@ Network = cast<CTrackManiaNetwork@>(App.Network);
+    CGameManiaAppPlayground@ CMAP = Network.ClientManiaAppPlayground;
+
+    if (false
+        || Map is null
+        || CMAP is null
+        || CMAP.ScoreMgr is null
+        || App.UserManagerScript is null
+        || App.UserManagerScript.Users.Length == 0
+        || App.UserManagerScript.Users[0] is null
+    )
+        return uint(-1);
+
+    return CMAP.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, Map.EdChallengeId, "PersonalBest", "", stunt ? "Stunt" : "TimeAttack", "");
+}
 
 void HoverTooltip(const string &in msg) {
     if (!UI::IsItemHovered())
@@ -13,18 +39,20 @@ void HoverTooltip(const string &in msg) {
 bool InMap() {
     CTrackMania@ App = cast<CTrackMania@>(GetApp());
 
-    return App.Editor is null
+    return true
+        && App.Editor is null
         && App.RootMap !is null
         && App.CurrentPlayground !is null
-        && App.Network.ClientManiaAppPlayground !is null;
+        && App.Network.ClientManiaAppPlayground !is null
+    ;
 }
 
 void Notify(const uint prevTime, const uint pb, const uint[] times) {
     if (true
         && prevTime > 0
         && (false
-            || !stunts && pb >= prevTime
-            || stunts && pb <= prevTime
+            || !stunt && pb >= prevTime
+            || stunt && pb <= prevTime
         )
     )
         return;
@@ -32,41 +60,42 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
     const uint target = times[int(S_Medal)];
 
     if (false
-        || (!stunts && prevTime <= target)
-        || (stunts && prevTime >= target)
+        || (!stunt && prevTime <= target)
+        || (stunt && prevTime >= target)
     )
         return;
 
     vec4 colorNotif;
 
     switch (S_Medal) {
-        case Medal::Author: colorNotif = vec4(S_ColorAuthor.x, S_ColorAuthor.y, S_ColorAuthor.z, 0.8f); break;
-        case Medal::Gold:   colorNotif = vec4(S_ColorGold.x,   S_ColorGold.y,   S_ColorGold.z,   0.8f); break;
-        case Medal::Silver: colorNotif = vec4(S_ColorSilver.x, S_ColorSilver.y, S_ColorSilver.z, 0.8f); break;
-        case Medal::Bronze: colorNotif = vec4(S_ColorBronze.x, S_ColorBronze.y, S_ColorAuthor.z, 0.8f); break;
-        default:            colorNotif = vec4(S_ColorCustom.x, S_ColorCustom.y, S_ColorCustom.z, 0.8f);
+#if DEPENDENCY_CHAMPIONMEDALS
+        case Medal::Champion:
+            if (stunt)  // theoretically shouldn't ever happen
+                return;
+            colorNotif = vec4(S_ColorChampion, 0.8f);
+            break;
+#endif
+        case Medal::Author: colorNotif = vec4(S_ColorAuthor, 0.8f); break;
+        case Medal::Gold:   colorNotif = vec4(S_ColorGold,   0.8f); break;
+        case Medal::Silver: colorNotif = vec4(S_ColorSilver, 0.8f); break;
+        case Medal::Bronze: colorNotif = vec4(S_ColorBronze, 0.8f); break;
+        default:            colorNotif = vec4(S_ColorCustom, 0.8f);
     }
 
-    if ((!stunts && pb <= target) || (stunts && pb >= target))
+    if ((!stunt && pb <= target) || (stunt && pb >= target))
         UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
     else
-        UI::ShowNotification(title, "Bummer! You still need " + (stunts ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
+        UI::ShowNotification(title, "Bummer! You still need " + (stunt ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
 }
 
 uint OnEnteredMap() {
     trace("entered map, getting PB...");
 
-    CTrackMania@ App = cast<CTrackMania@>(GetApp());
-
-    if (App.UserManagerScript is null || App.UserManagerScript.Users.Length == 0)
-        return 0;
-
-    uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", stunts ? "Stunt" : "TimeAttack", "");
-
+    uint best = GetPB(cast<CTrackMania@>(GetApp()).RootMap);
     if (best == uint(-1))
         best = 0;
 
-    trace("PB: " + (stunts ? tostring(best) : Time::Format(best)));
+    trace("PB: " + (stunt ? tostring(best) : Time::Format(best)));
 
     return best;
 }
