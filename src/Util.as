@@ -89,7 +89,7 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
     if ((!stunt && pb <= target) || (stunt && pb >= target))
         UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
     else
-        UI::ShowNotification(title, "Bummer! You still need " + (stunt ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
+        UI::ShowNotification(title, "You still need " + (stunt ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
 }
 
 uint OnEnteredMap() {
