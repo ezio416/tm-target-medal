@@ -6,7 +6,11 @@ uint ChampionMedal() {
     if (plugin is null || !plugin.Enabled)
         return 0;
 
+#if DEPENDENCY_CHAMPIONMEDALS
     return ChampionMedals::GetCMTime();
+#endif
+
+    return 0;
 }
 
 uint GetPB(CGameCtnChallenge@ Map) {
