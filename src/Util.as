@@ -8,9 +8,9 @@ uint ChampionMedal() {
 
 #if DEPENDENCY_CHAMPIONMEDALS
     return ChampionMedals::GetCMTime();
-#endif
-
+#else
     return 0;
+#endif
 }
 
 uint GetPB(CGameCtnChallenge@ Map) {
@@ -64,7 +64,7 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
     const uint target = times[int(S_Medal)];
 
     if (false
-        || (!stunt && prevTime <= target)
+        || (!stunt && prevTime <= target && prevTime > 0)
         || (stunt && prevTime >= target)
     )
         return;
