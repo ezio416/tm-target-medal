@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-08
+// m 2024-07-10
 
 string       currentAuthor;
 string       currentBronze;
@@ -95,7 +95,7 @@ void Main() {
 
         pb = GetPB(Map);
         if (pb == uint(-1)) {
-            warn("pb is 0");
+            warn("run finished but PB is 0");
             pb = 0;
             continue;
         }
@@ -130,15 +130,7 @@ void OnSettingsChanged() {
     currentCustom = stunt ? tostring(S_CustomTarget) : Time::Format(S_CustomTarget);
 
 #if DEPENDENCY_CHAMPIONMEDALS
-    if (true
-        && S_Medal == Medal::Champion
-        && ChampionMedal() == 0
-        && cast<CTrackMania@>(GetApp()).ActiveMenus.Length == 0
-    ) {
-        S_Medal = Medal::Author;
-        currentChampion = "";
-    }
-
+    ResetChampionIfNotExist();
     colorChampion = Text::FormatOpenplanetColor(S_ColorChampion);
 #endif
 

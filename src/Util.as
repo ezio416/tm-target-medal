@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-08
+// m 2024-07-10
 
 uint ChampionMedal() {
     Meta::Plugin@ plugin = Meta::GetPluginFromID("ChampionMedals");
@@ -53,6 +53,7 @@ bool InMap() {
 
 void Notify(const uint prevTime, const uint pb, const uint[] times) {
     if (true
+        && S_OnlyOnPB
         && prevTime > 0
         && (false
             || !stunt && pb >= prevTime
@@ -61,7 +62,7 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
     )
         return;
 
-    const uint target = times[int(S_Medal)];
+    const uint target = times[int(S_Medal) - (ChampionMedal() == 0 ? 1 : 0)];
 
     if (false
         || (!stunt && prevTime <= target && prevTime > 0)
@@ -95,11 +96,44 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
 uint OnEnteredMap() {
     trace("entered map, getting PB...");
 
-    uint best = GetPB(cast<CTrackMania@>(GetApp()).RootMap);
+    ResetChampionIfNotExist();
+
+    CGameCtnChallenge@ Map = cast<CTrackMania@>(GetApp()).RootMap;
+
+    uint best = GetPB(Map);
     if (best == uint(-1))
         best = 0;
 
     trace("PB: " + (stunt ? tostring(best) : Time::Format(best)));
 
+    if (S_NotifyOnEnter) {
+        uint[] times = {
+            Map.TMObjective_AuthorTime,
+            Map.TMObjective_GoldTime,
+            Map.TMObjective_SilverTime,
+            Map.TMObjective_BronzeTime,
+            S_CustomTarget
+        };
+
+#if DEPENDENCY_CHAMPIONMEDALS
+        const uint cm = ChampionMedal();
+        if (cm > 0)
+            times.InsertAt(0, cm);
+#endif
+
+        Notify(uint(-1), GetPB(Map), times);
+    }
+
     return best;
+}
+
+void ResetChampionIfNotExist() {
+    if (true
+        && S_Medal == Medal::Champion
+        && ChampionMedal() == 0
+        && InMap()
+    ) {
+        S_Medal = Medal::Author;
+        currentChampion = "";
+    }
 }

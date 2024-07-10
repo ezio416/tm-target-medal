@@ -1,8 +1,14 @@
 // c 2024-02-18
-// m 2024-07-08
+// m 2024-07-10
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = true;
+
+[Setting category="General" name="Only notify on new PB" description="Otherwise this will notify you after every run while you don't have your target"]
+bool S_OnlyOnPB = true;
+
+[Setting category="General" name="Notify when entering map"]
+bool S_NotifyOnEnter = false;
 
 enum Medal {
 #if DEPENDENCY_CHAMPIONMEDALS
@@ -15,12 +21,11 @@ enum Medal {
     Custom
 }
 
-[Setting category="General" name="Medal target"]
+[Setting category="General" name="Medal target" description="If Champion is selected and a map does not have that medal, this will revert to Author"]
 Medal S_Medal = Medal::Author;
 
 [Setting category="General" name="Custom time target (ms)" description="Must choose 'Custom' in above setting. For stunt mode, this is the score."]
 uint S_CustomTarget = 0;
-
 
 #if DEPENDENCY_CHAMPIONMEDALS
 [Setting category="Colors" name="Champion" color]
