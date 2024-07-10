@@ -5,7 +5,7 @@
 bool S_Enabled = true;
 
 [Setting category="General" name="Notify every run" description="Otherwise this will only notify you after a PB"]
-bool S_NotifyAlways = true;
+bool S_NotifyAlways = false;
 
 [Setting category="General" name="Notify when entering map"]
 bool S_NotifyOnEnter = false;
