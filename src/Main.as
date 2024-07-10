@@ -158,17 +158,18 @@ void RenderMenu() {
         if (UI::MenuItem("\\$S" + Icons::Check + " Enabled", "", S_Enabled))
             S_Enabled = !S_Enabled;
 
-    UI::Separator();
+        UI::Separator();
 
 #if DEPENDENCY_CHAMPIONMEDALS
-    if (true
-        && ChampionMedal() > 0
-        && UI::MenuItem(
-            colorChampion + "\\$S" + Icons::Circle + " Champion" + (currentChampion.Length > 0 ? " (" + currentChampion + ")" : ""),
-            "",
-            S_Medal == Medal::Champion,
-            S_Medal != Medal::Champion
-        )) {
+        if (true
+            && ChampionMedal() > 0
+            && UI::MenuItem(
+                colorChampion + "\\$S" + Icons::Circle + " Champion" + (currentChampion.Length > 0 ? " (" + currentChampion + ")" : ""),
+                "",
+                S_Medal == Medal::Champion,
+                S_Medal != Medal::Champion
+            )
+        ) {
             S_Medal = Medal::Champion;
             S_CustomWindow = false;
         }
