@@ -121,7 +121,7 @@ uint OnEnteredMap() {
             times.InsertAt(0, cm);
 #endif
 
-        Notify(uint(-1), GetPB(Map), times);
+        Notify(uint(-1), best, times);
     }
 
     return best;
