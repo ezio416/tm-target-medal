@@ -4,8 +4,8 @@
 [Setting category="General" name="Enabled"]
 bool S_Enabled = true;
 
-[Setting category="General" name="Only notify on new PB" description="Otherwise this will notify you after every run while you don't have your target"]
-bool S_OnlyOnPB = true;
+[Setting category="General" name="Notify every run" description="Otherwise this will only notify you after a PB"]
+bool S_NotifyAlways = true;
 
 [Setting category="General" name="Notify when entering map"]
 bool S_NotifyOnEnter = false;

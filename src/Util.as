@@ -53,7 +53,7 @@ bool InMap() {
 
 void Notify(const uint prevTime, const uint pb, const uint[] times) {
     if (true
-        && S_OnlyOnPB
+        && !S_NotifyAlways
         && prevTime > 0
         && (false
             || !stunt && pb >= prevTime
