@@ -51,7 +51,7 @@ bool InMap() {
     ;
 }
 
-void Notify(const uint prevTime, const uint pb, const uint[] times) {
+void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnterMap = false) {
     if (true
         && !S_NotifyAlways
         && prevTime > 0
@@ -87,9 +87,10 @@ void Notify(const uint prevTime, const uint pb, const uint[] times) {
         default:            colorNotif = vec4(S_ColorCustom, 0.8f);
     }
 
-    if ((!stunt && pb <= target) || (stunt && pb >= target))
-        UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
-    else
+    if ((!stunt && pb <= target) || (stunt && pb >= target)) {
+        if (!fromEnterMap)
+            UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
+    } else
         UI::ShowNotification(title, "You still need " + (stunt ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
 }
 
@@ -121,7 +122,7 @@ uint OnEnteredMap() {
             times.InsertAt(0, cm);
 #endif
 
-        Notify(uint(-1), best, times);
+        Notify(uint(-1), best, times, true);
     }
 
     return best;
