@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-10
+// m 2024-07-11
 
 uint ChampionMedal() {
     Meta::Plugin@ plugin = Meta::GetPluginFromID("ChampionMedals");
@@ -88,10 +88,16 @@ void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnt
     }
 
     if ((!stunt && pb <= target) || (stunt && pb >= target)) {
-        if (!fromEnterMap)
-            UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
-    } else
-        UI::ShowNotification(title, "You still need " + (stunt ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
+        if (!fromEnterMap) {
+            const string msg = "Congrats! " + tostring(S_Medal) + " medal achieved";
+            UI::ShowNotification(title, msg, colorNotif);
+            print(msg);
+        }
+    } else {
+        const string msg = "You still need " + (stunt ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal";
+        UI::ShowNotification(title, msg);
+        print(msg);
+    }
 }
 
 uint OnEnteredMap() {
