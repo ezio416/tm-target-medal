@@ -31,15 +31,6 @@ uint GetPB(CGameCtnChallenge@ Map) {
     return CMAP.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, Map.EdChallengeId, "PersonalBest", "", stunt ? "Stunt" : "TimeAttack", "");
 }
 
-void HoverTooltip(const string &in msg) {
-    if (!UI::IsItemHovered())
-        return;
-
-    UI::BeginTooltip();
-        UI::Text(msg);
-    UI::EndTooltip();
-}
-
 bool InMap() {
     CTrackMania@ App = cast<CTrackMania@>(GetApp());
 
