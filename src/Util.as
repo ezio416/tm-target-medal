@@ -138,6 +138,8 @@ uint OnEnteredMap() {
         Notify(uint(-1), best, times, true);
     }
 
+    OnSettingsChanged();  // mainly for currentCustom string
+
     return best;
 }
 

@@ -8,6 +8,7 @@ string       currentCustom;
 string       currentGold;
 string       currentSilver;
 uint         pb     = 0;
+const float  scale  = UI::GetScale();
 bool         stunt  = false;
 string       targetText;
 const string title  = "\\$FC0" + Icons::Circle + "\\$G Target Medal";
@@ -147,96 +148,59 @@ void OnSettingsSave(Settings::Section& section) {  // if a plugin is toggled, se
 
 void RenderMenu() {
     if (UI::BeginMenu(title + targetText)) {
-        if (UI::MenuItem("\\$S" + Icons::Check + " Enabled", "", S_Enabled))
-            S_Enabled = !S_Enabled;
+        S_Enabled = UI::Checkbox("Enabled", S_Enabled);
 
         UI::Separator();
 
 #if DEPENDENCY_CHAMPIONMEDALS
+        UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorChampion, 1.0f));
         if (true
             && (ChampionMedal() > 0 || !InMap())
-            && UI::MenuItem(
-                colorChampion + "\\$S" + Icons::Circle + " Champion" + (currentChampion.Length > 0 ? " (" + currentChampion + ")" : ""),
-                "",
-                S_Medal == Medal::Champion,
-                S_Medal != Medal::Champion
-            )
-        ) {
+            && UI::RadioButton(colorChampion + "\\$SChampion" + (currentChampion.Length > 0 ? " (" + currentChampion + ")" : ""), S_Medal == Medal::Champion)
+        )
             S_Medal = Medal::Champion;
-            S_CustomWindow = false;
-        }
+        UI::PopStyleColor();
 #endif
 
-        if (UI::MenuItem(
-            colorAuthor + "\\$S" + Icons::Circle + " Author" + (currentAuthor.Length > 0 ? " (" + currentAuthor + ")" : ""),
-            "",
-            S_Medal == Medal::Author,
-            S_Medal != Medal::Author
-        )) {
+        UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorAuthor, 1.0f));
+        if (UI::RadioButton(colorAuthor + "\\$SAuthor" + (currentAuthor.Length > 0 ? " (" + currentAuthor + ")" : ""), S_Medal == Medal::Author))
             S_Medal = Medal::Author;
-            S_CustomWindow = false;
-        }
+        UI::PopStyleColor();
 
-        if (UI::MenuItem(
-            colorGold + "\\$S" + Icons::Circle + " Gold" + (currentGold.Length > 0 ? " (" + currentGold + ")" : ""),
-            "",
-            S_Medal == Medal::Gold,
-            S_Medal != Medal::Gold
-        )) {
+        UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorGold, 1.0f));
+        if (UI::RadioButton(colorGold + "\\$SGold" + (currentGold.Length > 0 ? " (" + currentGold + ")" : ""), S_Medal == Medal::Gold))
             S_Medal = Medal::Gold;
-            S_CustomWindow = false;
-        }
+        UI::PopStyleColor();
 
-        if (UI::MenuItem(
-            colorSilver + "\\$S" + Icons::Circle + " Silver" + (currentSilver.Length > 0 ? " (" + currentSilver + ")" : ""),
-            "",
-            S_Medal == Medal::Silver,
-            S_Medal != Medal::Silver
-        )) {
+        UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorSilver, 1.0f));
+        if (UI::RadioButton(colorSilver + "\\$SSilver" + (currentSilver.Length > 0 ? " (" + currentSilver + ")" : ""), S_Medal == Medal::Silver))
             S_Medal = Medal::Silver;
-            S_CustomWindow = false;
-        }
+        UI::PopStyleColor();
 
-        if (UI::MenuItem(
-            colorBronze + "\\$S" + Icons::Circle + " Bronze" + (currentBronze.Length > 0 ? " (" + currentBronze + ")" : ""),
-            "",
-            S_Medal == Medal::Bronze,
-            S_Medal != Medal::Bronze
-        )) {
+        UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorBronze, 1.0f));
+        if (UI::RadioButton(colorBronze + "\\$SBronze" + (currentBronze.Length > 0 ? " (" + currentBronze + ")" : ""), S_Medal == Medal::Bronze))
             S_Medal = Medal::Bronze;
-            S_CustomWindow = false;
-        }
+        UI::PopStyleColor();
 
-        if (S_Custom) {
-            if (UI::MenuItem(
-                colorCustom + "\\$S" + Icons::Circle + " Custom" + (currentCustom.Length > 0 ? " (" + currentCustom + ")" : ""),
-                "",
-                S_Medal == Medal::Custom
-            )) {
+        if (S_MenuCustom) {
+            UI::Separator();
+
+            UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorCustom, 1.0f));
+            if (UI::RadioButton(colorCustom + "\\$SCustom" + (currentCustom.Length > 0 ? " (" + currentCustom + ")" : ""), S_Medal == Medal::Custom))
                 S_Medal = Medal::Custom;
-                S_CustomWindow = true;
+            UI::PopStyleColor();
+
+            if (S_Medal == Medal::Custom) {
+                const uint pre = S_CustomTarget;
+
+                UI::SetNextItemWidth(scale * 110.0f);
+                S_CustomTarget = UI::InputInt("##input-custom", S_CustomTarget);
+
+                if (S_CustomTarget != pre)
+                    OnSettingsChanged();
             }
-            HoverTooltip(Icons::Pencil + " Click to edit");
         }
 
         UI::EndMenu();
     }
-}
-
-void Render() {
-    if (!S_CustomWindow)
-        return;
-
-    if (UI::Begin(title + " - Custom Time", S_CustomWindow, UI::WindowFlags::AlwaysAutoResize)) {
-        const uint pre = S_CustomTarget;
-
-        S_CustomTarget = UI::InputInt(stunt ? "score" : "time in ms", S_CustomTarget);
-
-        if (S_CustomTarget != pre)
-            OnSettingsChanged();
-
-        UI::Text("Chosen target " + (stunt ? "score" : "time") + ": " + currentCustom);
-    }
-
-    UI::End();
 }

@@ -29,11 +29,11 @@ Medal S_Medal = Medal::Champion;
 Medal S_Medal = Medal::Author;
 #endif
 
-[Setting category="General" name="Show menu option for custom time"]
-bool S_Custom = true;
-
 [Setting category="General" name="Custom time target (ms)" description="Must choose 'Custom' in above setting. For stunt mode, this is the score."]
 uint S_CustomTarget = 0;
+
+[Setting category="General" name="Show menu option for custom time/score"]
+bool S_MenuCustom = true;
 
 #if DEPENDENCY_CHAMPIONMEDALS
 [Setting category="Colors" name="Champion" color]
@@ -60,7 +60,3 @@ string colorBronze;
 [Setting category="Colors" name="Custom" color]
 vec3 S_ColorCustom = vec3(1.0f, 0.0f, 1.0f);
 string colorCustom;
-
-
-[Setting hidden]
-bool S_CustomWindow = false;
