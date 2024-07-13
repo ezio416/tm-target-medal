@@ -32,8 +32,8 @@ Medal S_Medal = Medal::Author;
 [Setting category="General" name="Custom time target (ms)" description="Must choose 'Custom' in above setting. For stunt mode, this is the score."]
 uint S_CustomTarget = 0;
 
-[Setting category="General" name="Show menu option for custom time/score"]
-bool S_MenuCustom = true;
+[Setting category="General" name="Extended menu" description="Includes all these settings and allows choosing 'Custom' easily"]
+bool S_ExtendedMenu = false;
 
 #if DEPENDENCY_CHAMPIONMEDALS
 [Setting category="Colors" name="Champion" color]

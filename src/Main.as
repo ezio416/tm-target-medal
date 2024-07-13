@@ -150,6 +150,11 @@ void RenderMenu() {
     if (UI::BeginMenu(title + targetText)) {
         S_Enabled = UI::Checkbox("Enabled", S_Enabled);
 
+        if (S_ExtendedMenu) {
+            S_NotifyAlways = UI::Checkbox("Notify every run", S_NotifyAlways);
+            S_NotifyOnEnter = UI::Checkbox("Notify on enter map", S_NotifyOnEnter);
+        }
+
         UI::Separator();
 
 #if DEPENDENCY_CHAMPIONMEDALS
@@ -182,7 +187,7 @@ void RenderMenu() {
             S_Medal = Medal::Bronze;
         UI::PopStyleColor();
 
-        if (S_MenuCustom) {
+        if (S_ExtendedMenu) {
             UI::Separator();
 
             UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorCustom, 1.0f));
