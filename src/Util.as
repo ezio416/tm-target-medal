@@ -45,10 +45,11 @@ bool InMap() {
 void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnterMap = false) {
     if (true
         && !S_NotifyAlways
+        && !fromEnterMap
         && prevTime > 0
         && (false
-            || !stunt && pb >= prevTime
-            || stunt && pb <= prevTime
+            || (!stunt && pb >= prevTime)
+            || (stunt && pb <= prevTime)
         )
     )
         return;
@@ -62,7 +63,7 @@ void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnt
 
     if (false
         || (!stunt && prevTime <= target && prevTime > 0)
-        || (stunt && prevTime >= target)
+        || (stunt && prevTime >= target && prevTime < (uint(-1)))
     )
         return;
 
