@@ -62,7 +62,12 @@ void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnt
     )
         return;
 
-    const uint target = times[int(S_Medal) - (ChampionMedal() == 0 ? 1 : 0)];
+    int index = int(S_Medal) - (ChampionMedal() == 0 ? 1 : 0);
+#if !DEPENDENCY_CHAMPIONMEDALS
+    index++;  // prevents index oob
+#endif
+
+    const uint target = times[index];
 
     if (false
         || (!stunt && prevTime <= target && prevTime > 0)
