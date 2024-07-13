@@ -207,15 +207,17 @@ void RenderMenu() {
             S_CustomWindow = false;
         }
 
-        if (UI::MenuItem(
-            colorCustom + "\\$S" + Icons::Circle + " Custom" + (currentCustom.Length > 0 ? " (" + currentCustom + ")" : ""),
-            "",
-            S_Medal == Medal::Custom
-        )) {
-            S_Medal = Medal::Custom;
-            S_CustomWindow = true;
+        if (S_Custom) {
+            if (UI::MenuItem(
+                colorCustom + "\\$S" + Icons::Circle + " Custom" + (currentCustom.Length > 0 ? " (" + currentCustom + ")" : ""),
+                "",
+                S_Medal == Medal::Custom
+            )) {
+                S_Medal = Medal::Custom;
+                S_CustomWindow = true;
+            }
+            HoverTooltip(Icons::Pencil + " Click to edit");
         }
-        HoverTooltip(Icons::Pencil + " Click to edit");
 
         UI::EndMenu();
     }

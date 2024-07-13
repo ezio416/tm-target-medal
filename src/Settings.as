@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-10
+// m 2024-07-13
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = true;
@@ -23,6 +23,9 @@ enum Medal {
 
 [Setting category="General" name="Medal target" description="If Champion is selected and a map does not have that medal, this will revert to Author"]
 Medal S_Medal = Medal::Author;
+
+[Setting category="General" name="Show menu option for custom time"]
+bool S_Custom = true;
 
 [Setting category="General" name="Custom time target (ms)" description="Must choose 'Custom' in above setting. For stunt mode, this is the score."]
 uint S_CustomTarget = 0;
