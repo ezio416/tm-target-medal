@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-10
+// m 2024-07-13
 
 string       currentAuthor;
 string       currentBronze;
@@ -20,7 +20,7 @@ void Main() {
     CGameCtnChallenge@ Map = App.RootMap;
 
     if (wasInMap) {
-        stunt = string(Map.MapType) == "TrackMania\\TM_Stunt";
+        stunt = string(Map.MapType).Contains("TM_Stunt");
         pb = OnEnteredMap();
     }
 
@@ -46,7 +46,7 @@ void Main() {
         @Map = App.RootMap;
 
         if (!wasInMap) {
-            stunt = string(Map.MapType) == "TrackMania\\TM_Stunt";
+            stunt = string(Map.MapType).Contains("TM_Stunt");
             pb = OnEnteredMap();
             wasInMap = true;
         }
@@ -154,7 +154,7 @@ void RenderMenu() {
 
 #if DEPENDENCY_CHAMPIONMEDALS
         if (true
-            && ChampionMedal() > 0
+            && (ChampionMedal() > 0 || !InMap())
             && UI::MenuItem(
                 colorChampion + "\\$S" + Icons::Circle + " Champion" + (currentChampion.Length > 0 ? " (" + currentChampion + ")" : ""),
                 "",
