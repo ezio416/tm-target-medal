@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-11
+// m 2024-07-13
 
 uint ChampionMedal() {
     Meta::Plugin@ plugin = Meta::GetPluginFromID("ChampionMedals");
@@ -103,7 +103,9 @@ void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnt
 uint OnEnteredMap() {
     trace("entered map, getting PB...");
 
+#if DEPENDENCY_CHAMPIONMEDALS
     ResetChampionIfNotExist();
+#endif
 
     CGameCtnChallenge@ Map = cast<CTrackMania@>(GetApp()).RootMap;
 
@@ -134,6 +136,7 @@ uint OnEnteredMap() {
     return best;
 }
 
+#if DEPENDENCY_CHAMPIONMEDALS
 void ResetChampionIfNotExist() {
     if (true
         && S_Medal == Medal::Champion
@@ -144,3 +147,4 @@ void ResetChampionIfNotExist() {
         currentChampion = "";
     }
 }
+#endif

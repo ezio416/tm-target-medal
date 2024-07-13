@@ -21,7 +21,11 @@ enum Medal {
     Custom
 }
 
+#if DEPENDENCY_CHAMPIONMEDALS
 [Setting category="General" name="Medal target" description="If Champion is selected and a map does not have that medal, this will revert to Author"]
+#else
+[Setting category="General" name="Medal target"]
+#endif
 Medal S_Medal = Medal::Author;
 
 [Setting category="General" name="Show menu option for custom time"]
