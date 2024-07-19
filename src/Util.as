@@ -1,72 +1,149 @@
 // c 2024-02-18
-// m 2024-07-01
+// m 2024-07-13
 
-void HoverTooltip(const string &in msg) {
-    if (!UI::IsItemHovered())
-        return;
+uint ChampionMedal() {
+    Meta::Plugin@ plugin = Meta::GetPluginFromID("ChampionMedals");
+    if (plugin is null || !plugin.Enabled)
+        return 0;
 
-    UI::BeginTooltip();
-        UI::Text(msg);
-    UI::EndTooltip();
+#if DEPENDENCY_CHAMPIONMEDALS
+    return ChampionMedals::GetCMTime();
+#else
+    return 0;
+#endif
+}
+
+uint GetPB(CGameCtnChallenge@ Map) {
+    CTrackMania@ App = cast<CTrackMania@>(GetApp());
+    CTrackManiaNetwork@ Network = cast<CTrackManiaNetwork@>(App.Network);
+    CGameManiaAppPlayground@ CMAP = Network.ClientManiaAppPlayground;
+
+    if (false
+        || Map is null
+        || CMAP is null
+        || CMAP.ScoreMgr is null
+        || App.UserManagerScript is null
+        || App.UserManagerScript.Users.Length == 0
+        || App.UserManagerScript.Users[0] is null
+    )
+        return uint(-1);
+
+    return CMAP.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, Map.EdChallengeId, "PersonalBest", "", stunt ? "Stunt" : "TimeAttack", "");
 }
 
 bool InMap() {
     CTrackMania@ App = cast<CTrackMania@>(GetApp());
 
-    return App.Editor is null
+    return true
+        && App.Editor is null
         && App.RootMap !is null
         && App.CurrentPlayground !is null
-        && App.Network.ClientManiaAppPlayground !is null;
+        && App.Network.ClientManiaAppPlayground !is null
+    ;
 }
 
-void Notify(const uint prevTime, const uint pb, const uint[] times) {
+void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnterMap = false) {
     if (true
+        && !S_NotifyAlways
+        && !fromEnterMap
         && prevTime > 0
         && (false
-            || !stunts && pb >= prevTime
-            || stunts && pb <= prevTime
+            || (!stunt && pb >= prevTime)
+            || (stunt && pb <= prevTime)
         )
     )
         return;
 
-    const uint target = times[int(S_Medal)];
+    int index = int(S_Medal) - (ChampionMedal() == 0 ? 1 : 0);
+#if !DEPENDENCY_CHAMPIONMEDALS
+    index++;  // prevents index oob
+#endif
+
+    const uint target = times[index];
 
     if (false
-        || (!stunts && prevTime <= target)
-        || (stunts && prevTime >= target)
+        || (!stunt && prevTime <= target && prevTime > 0)
+        || (stunt && prevTime >= target && prevTime < (uint(-1)))
     )
         return;
 
     vec4 colorNotif;
 
     switch (S_Medal) {
-        case Medal::Author: colorNotif = vec4(S_ColorAuthor.x, S_ColorAuthor.y, S_ColorAuthor.z, 0.8f); break;
-        case Medal::Gold:   colorNotif = vec4(S_ColorGold.x,   S_ColorGold.y,   S_ColorGold.z,   0.8f); break;
-        case Medal::Silver: colorNotif = vec4(S_ColorSilver.x, S_ColorSilver.y, S_ColorSilver.z, 0.8f); break;
-        case Medal::Bronze: colorNotif = vec4(S_ColorBronze.x, S_ColorBronze.y, S_ColorAuthor.z, 0.8f); break;
-        default:            colorNotif = vec4(S_ColorCustom.x, S_ColorCustom.y, S_ColorCustom.z, 0.8f);
+#if DEPENDENCY_CHAMPIONMEDALS
+        case Medal::Champion:
+            if (stunt)  // theoretically shouldn't ever happen
+                return;
+            colorNotif = vec4(S_ColorChampion, 0.8f);
+            break;
+#endif
+        case Medal::Author: colorNotif = vec4(S_ColorAuthor, 0.8f); break;
+        case Medal::Gold:   colorNotif = vec4(S_ColorGold,   0.8f); break;
+        case Medal::Silver: colorNotif = vec4(S_ColorSilver, 0.8f); break;
+        case Medal::Bronze: colorNotif = vec4(S_ColorBronze, 0.8f); break;
+        default:            colorNotif = vec4(S_ColorCustom, 0.8f);
     }
 
-    if ((!stunts && pb <= target) || (stunts && pb >= target))
-        UI::ShowNotification(title, "Congrats! " + tostring(S_Medal) + " medal achieved", colorNotif);
-    else
-        UI::ShowNotification(title, "Bummer! You still need " + (stunts ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal");
+    if ((!stunt && pb <= target) || (stunt && pb >= target)) {
+        if (!fromEnterMap) {
+            const string msg = "Congrats! " + tostring(S_Medal) + " medal achieved";
+            UI::ShowNotification(title, msg, colorNotif);
+            print(msg);
+        }
+    } else {
+        const string msg = "You still need " + (stunt ? tostring(target - pb) : Time::Format(pb - target)) + " for the " + tostring(S_Medal) + " medal";
+        UI::ShowNotification(title, msg);
+        print(msg);
+    }
 }
 
 uint OnEnteredMap() {
     trace("entered map, getting PB...");
 
-    CTrackMania@ App = cast<CTrackMania@>(GetApp());
+#if DEPENDENCY_CHAMPIONMEDALS
+    ResetChampionIfNotExist();
+#endif
 
-    if (App.UserManagerScript is null || App.UserManagerScript.Users.Length == 0)
-        return 0;
+    CGameCtnChallenge@ Map = cast<CTrackMania@>(GetApp()).RootMap;
 
-    uint best = App.Network.ClientManiaAppPlayground.ScoreMgr.Map_GetRecord_v2(App.UserManagerScript.Users[0].Id, App.RootMap.EdChallengeId, "PersonalBest", "", stunts ? "Stunt" : "TimeAttack", "");
-
+    uint best = GetPB(Map);
     if (best == uint(-1))
         best = 0;
 
-    trace("PB: " + (stunts ? tostring(best) : Time::Format(best)));
+    trace("PB: " + (stunt ? tostring(best) : Time::Format(best)));
+
+    if (S_NotifyOnEnter) {
+        uint[] times = {
+            Map.TMObjective_AuthorTime,
+            Map.TMObjective_GoldTime,
+            Map.TMObjective_SilverTime,
+            Map.TMObjective_BronzeTime,
+            S_CustomTarget
+        };
+
+#if DEPENDENCY_CHAMPIONMEDALS
+        const uint cm = ChampionMedal();
+        if (cm > 0)
+            times.InsertAt(0, cm);
+#endif
+
+        Notify(uint(-1), best, times, true);
+    }
+
+    OnSettingsChanged();  // mainly for currentCustom string
 
     return best;
 }
+
+#if DEPENDENCY_CHAMPIONMEDALS
+void ResetChampionIfNotExist() {
+    if (true
+        && S_Medal == Medal::Champion
+        && ChampionMedal() == 0
+        && InMap()
+    ) {
+        S_Medal = Medal::Author;
+        currentChampion = "";
+    }
+}
+#endif

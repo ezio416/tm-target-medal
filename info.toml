@@ -2,5 +2,8 @@
 name = "Target Medal"
 author = "Ezio"
 category = "Race"
-version = "1.1.0"
+version = "1.2.0"
 siteid = 508
+
+[script]
+optional_dependencies = [ "ChampionMedals" ]
