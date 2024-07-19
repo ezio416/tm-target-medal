@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-13
+// m 2024-07-19
 
 [Setting category="General" name="Enabled"]
 bool S_Enabled = true;
@@ -14,6 +14,9 @@ enum Medal {
 #if DEPENDENCY_CHAMPIONMEDALS
     Champion,
 #endif
+#if DEPENDENCY_WARRIORMEDALS
+    Warrior,
+#endif
     Author,
     Gold,
     Silver,
@@ -21,9 +24,15 @@ enum Medal {
     Custom
 }
 
-#if DEPENDENCY_CHAMPIONMEDALS
+#if DEPENDENCY_CHAMPIONMEDALS && DEPENDENCY_WARRIORMEDALS
+[Setting category="General" name="Medal target" description="If Champion/Warrior is selected and a map does not have that medal, this will revert to Author"]
+Medal S_Medal = Medal::Champion;
+#elif DEPENDENCY_CHAMPIONMEDALS
 [Setting category="General" name="Medal target" description="If Champion is selected and a map does not have that medal, this will revert to Author"]
 Medal S_Medal = Medal::Champion;
+#elif DEPENDENCY_WARRIORMEDALS
+[Setting category="General" name="Medal target" description="If Warrior is selected and a map does not have that medal, this will revert to Author"]
+Medal S_Medal = Medal::Warrior;
 #else
 [Setting category="General" name="Medal target"]
 Medal S_Medal = Medal::Author;
@@ -39,6 +48,12 @@ bool S_ExtendedMenu = false;
 [Setting category="Colors" name="Champion" color]
 vec3 S_ColorChampion = vec3(1.0f, 0.267f, 0.467f);
 string colorChampion;
+#endif
+
+#if DEPENDENCY_WARRIORMEDALS
+[Setting category="Colors" name="Warrior" color]
+vec3 S_ColorWarrior = vec3(0.2f, 0.8f, 1.0f);
+string colorWarrior;
 #endif
 
 [Setting category="Colors" name="Author" color]

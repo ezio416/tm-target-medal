@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-13
+// m 2024-07-19
 
 uint ChampionMedal() {
     Meta::Plugin@ plugin = Meta::GetPluginFromID("ChampionMedals");
@@ -54,8 +54,17 @@ void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnt
     )
         return;
 
-    int index = int(S_Medal) - (ChampionMedal() == 0 ? 1 : 0);
+    int index = int(S_Medal);
+
+    if (ChampionMedal() == 0)
+        index--;
 #if !DEPENDENCY_CHAMPIONMEDALS
+    index++;  // prevents index oob
+#endif
+
+    if (WarriorMedalAsync() == 0)
+        index--;
+#if !DEPENDENCY_WARRIORMEDALS
     index++;  // prevents index oob
 #endif
 
@@ -75,6 +84,13 @@ void Notify(const uint prevTime, const uint pb, const uint[] times, bool fromEnt
             if (stunt)  // theoretically shouldn't ever happen
                 return;
             colorNotif = vec4(S_ColorChampion, 0.8f);
+            break;
+#endif
+#if DEPENDENCY_WARRIORMEDALS
+        case Medal::Warrior:
+            if (stunt)  // theoretically shouldn't ever happen
+                return;
+            colorNotif = vec4(S_ColorWarrior, 0.8f);
             break;
 #endif
         case Medal::Author: colorNotif = vec4(S_ColorAuthor, 0.8f); break;
@@ -103,6 +119,9 @@ uint OnEnteredMap() {
 #if DEPENDENCY_CHAMPIONMEDALS
     ResetChampionIfNotExist();
 #endif
+#if DEPENDENCY_WARRIORMEDALS
+    ResetWarriorIfNotExistAsync();
+#endif
 
     CGameCtnChallenge@ Map = cast<CTrackMania@>(GetApp()).RootMap;
 
@@ -121,6 +140,11 @@ uint OnEnteredMap() {
             S_CustomTarget
         };
 
+#if DEPENDENCY_WARRIORMEDALS
+        const uint wm = WarriorMedalAsync();
+        if (wm > 0)
+            times.InsertAt(0, wm);
+#endif
 #if DEPENDENCY_CHAMPIONMEDALS
         const uint cm = ChampionMedal();
         if (cm > 0)
@@ -147,3 +171,50 @@ void ResetChampionIfNotExist() {
     }
 }
 #endif
+
+#if DEPENDENCY_WARRIORMEDALS
+void ResetWarriorIfNotExist() {
+    if (true
+        && S_Medal == Medal::Warrior
+        && WarriorMedal() == 0
+        && InMap()
+    ) {
+        S_Medal = Medal::Author;
+        currentWarrior = "";
+    }
+}
+void ResetWarriorIfNotExistAsync() {
+    if (true
+        && S_Medal == Medal::Warrior
+        && WarriorMedalAsync() == 0
+        && InMap()
+    ) {
+        S_Medal = Medal::Author;
+        currentWarrior = "";
+    }
+}
+#endif
+
+uint WarriorMedal() {
+    Meta::Plugin@ plugin = Meta::GetPluginFromID("WarriorMedals");
+    if (plugin is null || !plugin.Enabled)
+        return 0;
+
+#if DEPENDENCY_WARRIORMEDALS
+    return WarriorMedals::GetWMTime();
+#else
+    return 0;
+#endif
+}
+
+uint WarriorMedalAsync() {
+    Meta::Plugin@ plugin = Meta::GetPluginFromID("WarriorMedals");
+    if (plugin is null || !plugin.Enabled)
+        return 0;
+
+#if DEPENDENCY_WARRIORMEDALS
+    return WarriorMedals::GetWMTimeAsync();
+#else
+    return 0;
+#endif
+}

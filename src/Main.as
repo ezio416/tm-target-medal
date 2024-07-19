@@ -1,5 +1,5 @@
 // c 2024-02-18
-// m 2024-07-13
+// m 2024-07-19
 
 string       currentAuthor;
 string       currentBronze;
@@ -7,6 +7,7 @@ string       currentChampion;
 string       currentCustom;
 string       currentGold;
 string       currentSilver;
+string       currentWarrior;
 uint         pb     = 0;
 const float  scale  = UI::GetScale();
 bool         stunt  = false;
@@ -34,6 +35,7 @@ void Main() {
 
         if (!inMap) {
             currentChampion = "";
+            currentWarrior  = "";
             currentAuthor   = "";
             currentGold     = "";
             currentSilver   = "";
@@ -52,6 +54,13 @@ void Main() {
             wasInMap = true;
         }
 
+#if DEPENDENCY_WARRIORMEDALS
+        if (currentWarrior.Length == 0) {
+            const uint wm = WarriorMedal();
+            if (wm > 0)
+                currentWarrior = Time::Format(wm);
+        }
+#endif
 #if DEPENDENCY_CHAMPIONMEDALS
         if (currentChampion.Length == 0) {
             const uint cm = ChampionMedal();
@@ -109,6 +118,11 @@ void Main() {
             S_CustomTarget
         };
 
+#if DEPENDENCY_WARRIORMEDALS
+        const uint wm = WarriorMedalAsync();
+        if (wm > 0)
+            times.InsertAt(0, wm);
+#endif
 #if DEPENDENCY_CHAMPIONMEDALS
         const uint cm = ChampionMedal();
         if (cm > 0)
@@ -136,6 +150,10 @@ void OnSettingsChanged() {
 #if DEPENDENCY_CHAMPIONMEDALS
     ResetChampionIfNotExist();
     colorChampion = Text::FormatOpenplanetColor(S_ColorChampion);
+#endif
+#if DEPENDENCY_WARRIORMEDALS
+    ResetWarriorIfNotExist();
+    colorWarrior  = Text::FormatOpenplanetColor(S_ColorWarrior);
 #endif
 
     colorAuthor   = Text::FormatOpenplanetColor(S_ColorAuthor);
@@ -167,6 +185,15 @@ void RenderMenu() {
             && UI::RadioButton(colorChampion + "\\$SChampion" + (currentChampion.Length > 0 ? " (" + currentChampion + ")" : ""), S_Medal == Medal::Champion)
         )
             S_Medal = Medal::Champion;
+        UI::PopStyleColor();
+#endif
+#if DEPENDENCY_WARRIORMEDALS
+        UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorWarrior, 1.0f));
+        if (true
+            && (WarriorMedal() > 0 || !InMap())
+            && UI::RadioButton(colorWarrior + "\\$SWarrior" + (currentWarrior.Length > 0 ? " (" + currentWarrior + ")" : ""), S_Medal == Medal::Warrior)
+        )
+            S_Medal = Medal::Warrior;
         UI::PopStyleColor();
 #endif
 
