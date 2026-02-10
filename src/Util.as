@@ -1,6 +1,3 @@
-// c 2024-02-18
-// m 2024-07-19
-
 uint ChampionMedal() {
     Meta::Plugin@ plugin = Meta::GetPluginFromID("ChampionMedals");
     if (plugin is null || !plugin.Enabled)
