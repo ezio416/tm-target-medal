@@ -6,7 +6,6 @@ string       currentGold;
 string       currentSilver;
 string       currentWarrior;
 uint         pb     = 0;
-const float  scale  = UI::GetScale();
 bool         stunt  = false;
 string       targetText;
 const string title  = "\\$FC0" + Icons::Circle + "\\$G Target Medal";
@@ -219,7 +218,7 @@ void RenderMenu() {
             if (S_Medal == Medal::Custom) {
                 const uint pre = S_CustomTarget;
 
-                UI::SetNextItemWidth(scale * 110.0f);
+                UI::SetNextItemWidth(UI::GetScale() * 110.0f);
                 S_CustomTarget = UI::InputInt("##input-custom", S_CustomTarget);
 
                 if (S_CustomTarget != pre)
