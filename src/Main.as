@@ -86,13 +86,9 @@ void Main() {
 
         if (false
             || CMAP is null
-            || CMAP.ScoreMgr is null
             || CMAP.UI is null
             || (!stunt && CMAP.UI.UISequence != CGamePlaygroundUIConfig::EUISequence::Finish)
             || (stunt && CMAP.UI.UISequence != CGamePlaygroundUIConfig::EUISequence::UIInteraction)
-            || App.UserManagerScript is null
-            || App.UserManagerScript.Users.Length == 0
-            || App.UserManagerScript.Users[0] is null
         )
             continue;
 
