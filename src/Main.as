@@ -125,12 +125,10 @@ void Main() {
         Notify(prevTime, pb, times);
 
         try {
-            while (false
-                || (!stunt && (false
-                    || CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::Finish
+            while (stunt
+                ? CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::UIInteraction
+                : CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::Finish
                     || CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::EndRound
-                ))
-                || (stunt && CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::UIInteraction)
             )
                 yield();
         } catch { }  // easier this way in case CMAP or CMAP.UI goes null
