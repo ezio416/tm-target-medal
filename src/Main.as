@@ -1,12 +1,10 @@
-// c 2024-02-18
-// m 2024-07-13
-
 string       currentAuthor;
 string       currentBronze;
 string       currentChampion;
 string       currentCustom;
 string       currentGold;
 string       currentSilver;
+string       currentWarrior;
 uint         pb     = 0;
 const float  scale  = UI::GetScale();
 bool         stunt  = false;
@@ -34,6 +32,7 @@ void Main() {
 
         if (!inMap) {
             currentChampion = "";
+            currentWarrior  = "";
             currentAuthor   = "";
             currentGold     = "";
             currentSilver   = "";
@@ -52,6 +51,13 @@ void Main() {
             wasInMap = true;
         }
 
+#if DEPENDENCY_WARRIORMEDALS
+        if (currentWarrior.Length == 0) {
+            const uint wm = WarriorMedal();
+            if (wm > 0)
+                currentWarrior = Time::Format(wm);
+        }
+#endif
 #if DEPENDENCY_CHAMPIONMEDALS
         if (currentChampion.Length == 0) {
             const uint cm = ChampionMedal();
@@ -80,13 +86,9 @@ void Main() {
 
         if (false
             || CMAP is null
-            || CMAP.ScoreMgr is null
             || CMAP.UI is null
             || (!stunt && CMAP.UI.UISequence != CGamePlaygroundUIConfig::EUISequence::Finish)
             || (stunt && CMAP.UI.UISequence != CGamePlaygroundUIConfig::EUISequence::UIInteraction)
-            || App.UserManagerScript is null
-            || App.UserManagerScript.Users.Length == 0
-            || App.UserManagerScript.Users[0] is null
         )
             continue;
 
@@ -109,6 +111,11 @@ void Main() {
             S_CustomTarget
         };
 
+#if DEPENDENCY_WARRIORMEDALS
+        const uint wm = WarriorMedalAsync();
+        if (wm > 0)
+            times.InsertAt(0, wm);
+#endif
 #if DEPENDENCY_CHAMPIONMEDALS
         const uint cm = ChampionMedal();
         if (cm > 0)
@@ -118,12 +125,10 @@ void Main() {
         Notify(prevTime, pb, times);
 
         try {
-            while (false
-                || (!stunt && (false
-                    || CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::Finish
+            while (stunt
+                ? CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::UIInteraction
+                : CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::Finish
                     || CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::EndRound
-                ))
-                || (stunt && CMAP.UI.UISequence == CGamePlaygroundUIConfig::EUISequence::UIInteraction)
             )
                 yield();
         } catch { }  // easier this way in case CMAP or CMAP.UI goes null
@@ -136,6 +141,10 @@ void OnSettingsChanged() {
 #if DEPENDENCY_CHAMPIONMEDALS
     ResetChampionIfNotExist();
     colorChampion = Text::FormatOpenplanetColor(S_ColorChampion);
+#endif
+#if DEPENDENCY_WARRIORMEDALS
+    ResetWarriorIfNotExist();
+    colorWarrior  = Text::FormatOpenplanetColor(S_ColorWarrior);
 #endif
 
     colorAuthor   = Text::FormatOpenplanetColor(S_ColorAuthor);
@@ -167,6 +176,15 @@ void RenderMenu() {
             && UI::RadioButton(colorChampion + "\\$SChampion" + (currentChampion.Length > 0 ? " (" + currentChampion + ")" : ""), S_Medal == Medal::Champion)
         )
             S_Medal = Medal::Champion;
+        UI::PopStyleColor();
+#endif
+#if DEPENDENCY_WARRIORMEDALS
+        UI::PushStyleColor(UI::Col::CheckMark, vec4(S_ColorWarrior, 1.0f));
+        if (true
+            && (WarriorMedal() > 0 || !InMap())
+            && UI::RadioButton(colorWarrior + "\\$SWarrior" + (currentWarrior.Length > 0 ? " (" + currentWarrior + ")" : ""), S_Medal == Medal::Warrior)
+        )
+            S_Medal = Medal::Warrior;
         UI::PopStyleColor();
 #endif
 
