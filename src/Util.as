@@ -176,7 +176,10 @@ Medal GetPBMedal() {
 
     switch (GetMapType()) {
         case MapType::Race:
-        case MapType::Clones: {
+#if TMNEXT
+        case MapType::Clones:
+#endif
+        {
             const uint cm = GetChampionTime();
             const uint wm = GetWarriorTime();
 
