@@ -85,6 +85,22 @@ uint GetMedalTime(const Medal medal) {
         return 0;
     }
 
+#if TURBO
+    uint stm, sg, ss, sb, tm, num;
+    stm = sg = ss = sb = num = 0;
+    tm = Map.TMObjective_AuthorTime;
+    if (true
+        and Map.MapInfo !is null
+        and Map.MapInfo.AuthorNickName == "Nadeo"
+        and Text::TryParseUInt(Map.MapInfo.NameForUi, num)
+    ) {
+        stm = STM::GetSuperTrackmaster(num);
+        sg = STM::GetSuperGold(num, tm);
+        ss = STM::GetSuperSilver(num, tm);
+        sb = STM::GetSuperBronze(num, tm);
+    }
+#endif
+
     switch (medal) {
 #if TMNEXT
         case Medal::Champion:
@@ -93,15 +109,15 @@ uint GetMedalTime(const Medal medal) {
             return GetWarriorTime();
 #elif TURBO
         case Medal::SuperTrackmaster:
-            return 0;  // TODO
+            return stm;
         case Medal::SuperGold:
-            return 0;  // TODO
+            return sg;
         case Medal::SuperSilver:
-            return 0;  // TODO
+            return ss;
         case Medal::SuperBronze:
-            return 0;  // TODO
+            return sb;
         case Medal::Trackmaster:
-            return Map.TMObjective_AuthorTime;
+            return tm;
 #endif
 #if !TURBO
         case Medal::Author:

@@ -55,8 +55,7 @@ void SettingsTab_Debug() {
 
     UI::Separator();
 
-    CGameCtnChallenge@ Map = GetMap();
-    if (Map !is null) {
+    if (InMap()) {
 #if DEPENDENCY_CHAMPIONMEDALS
         UI::Text("champion: " + GetChampionTime());
 #endif
@@ -64,16 +63,16 @@ void SettingsTab_Debug() {
         UI::Text("warrior: " + GetWarriorTime());
 #endif
 #if TURBO
-        UI::Text("super trackmaster: " + 0);  // TODO
-        UI::Text("super gold: " + 0);  // TODO
-        UI::Text("super silver: " + 0);  // TODO
-        UI::Text("super bronze: " + 0);  // TODO
-        UI::Text("trackmaster: " + Map.TMObjective_AuthorTime);
+        UI::Text("super trackmaster: " + GetMedalTime(Medal::SuperTrackmaster));
+        UI::Text("super gold: "        + GetMedalTime(Medal::SuperGold));
+        UI::Text("super silver: "      + GetMedalTime(Medal::SuperSilver));
+        UI::Text("super bronze: "      + GetMedalTime(Medal::SuperBronze));
+        UI::Text("trackmaster: "       + GetMedalTime(Medal::Trackmaster));
 #else
-        UI::Text("author: " + Map.TMObjective_AuthorTime);
+        UI::Text("author: "            + GetMedalTime(Medal::Author));
 #endif
-        UI::Text("gold: " + Map.TMObjective_GoldTime);
-        UI::Text("silver: " + Map.TMObjective_SilverTime);
-        UI::Text("bronze: " + Map.TMObjective_BronzeTime);
+        UI::Text("gold: "              + GetMedalTime(Medal::Gold));
+        UI::Text("silver: "            + GetMedalTime(Medal::Silver));
+        UI::Text("bronze: "            + GetMedalTime(Medal::Bronze));
     }
 }
