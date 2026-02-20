@@ -24,7 +24,7 @@ void SettingsTab_General() {
         Medal medal;
 
 #if TURBO
-        for (int i = Medal::SuperTrackmaster; i <= Medal::Trackmaster; i++) {
+        for (int i = Medal::Duck; i <= Medal::Trackmaster; i++) {
             medal = Medal(i);
             if (UI::Selectable(tostring(medal), S_Medal == medal)) {
                 S_Medal = medal;

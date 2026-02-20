@@ -18,12 +18,17 @@ enum Medal {
 #if TMNEXT
     Champion,
     Warrior,
-#elif TURBO
+#elif TURBO || MP4
+    Duck,
+#if TURBO
     SuperTrackmaster,
+#endif
     SuperGold,
     SuperSilver,
     SuperBronze,
+#if TURBO
     Trackmaster,
+#endif
 #endif
 #if !TURBO
     Author,
@@ -38,6 +43,14 @@ enum Medal {
 uint GetChampionTime() {
 #if DEPENDENCY_CHAMPIONMEDALS
     return ChampionMedals::GetCMTime();
+#else
+    return 0;
+#endif
+}
+
+uint GetDuckTime() {
+#if DEPENDENCY_DUCKMEDALS
+    return DuckMedals::GetDuckTime();
 #else
     return 0;
 #endif
@@ -109,7 +122,10 @@ uint GetMedalTime(const Medal medal) {
             return GetChampionTime();
         case Medal::Warrior:
             return GetWarriorTime();
-#elif TURBO
+#elif TURBO || MP4
+        case Medal::Duck:
+            return GetDuckTime();
+#if TURBO
         case Medal::SuperTrackmaster:
             return stm;
         case Medal::SuperGold:
@@ -120,6 +136,14 @@ uint GetMedalTime(const Medal medal) {
             return sb;
         case Medal::Trackmaster:
             return tm;
+#else
+        case Medal::SuperGold:
+            return 0;  // TODO
+        case Medal::SuperSilver:
+            return 0;  // TODO
+        case Medal::SuperBronze:
+            return 0;  // TODO
+#endif
 #endif
 #if !TURBO
         case Medal::Author:
@@ -340,6 +364,16 @@ Medal GetPBMedal() {
                 and pb <= wm
             ) {
                 return Medal::Warrior;
+            }
+#endif
+
+#if DEPENDENCY_DUCKMEDALS
+            const uint dm = GetDuckTime();
+            if (true
+                and dm > 0
+                and pb <= dm
+            ) {
+                return Medal::Duck;
             }
 #endif
         }  // Race, Clones
