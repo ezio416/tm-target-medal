@@ -137,13 +137,16 @@ uint GetMedalTime(const Medal medal) {
 }
 
 uint GetPB() {
+    if (!InMap()) {
+        return MAX_UINT;
+    }
+
     auto App = cast<CTrackMania>(GetApp());
 
 #if TMNEXT
     CGameManiaAppPlayground@ CMAP = App.Network.ClientManiaAppPlayground;
 
     if (false
-        or !InMap()
         or CMAP is null
         or CMAP.ScoreMgr is null
         or App.UserManagerScript is null
@@ -187,6 +190,8 @@ uint GetPB() {
         and Network.TmRaceRules !is null
         and Network.TmRaceRules.DataMgr !is null
     ) {
+        uint ghostPb = MAX_UINT;
+
         for (int i = Network.TmRaceRules.DataMgr.Ghosts.Length - 1; i >= 0; i--) {
             CGameGhostScript@ Ghost = Network.TmRaceRules.DataMgr.Ghosts[i];
             if (true
@@ -195,9 +200,25 @@ uint GetPB() {
                 and Ghost.RaceResult.Time > 0
                 and Ghost.Nickname == Network.PlayerInfo.Name
             ) {
-                return uint(Ghost.RaceResult.Time);
+                ghostPb = uint(Ghost.RaceResult.Time);
+                break;
             }
         }
+
+        for (int i = Network.TmRaceRules.DataMgr.Records.Length - 1; i >= 0; i--) {
+            CGameHighScore@ Score = Network.TmRaceRules.DataMgr.Records[i];
+            if (true
+                and Score !is null
+                and Score.Time < ghostPb
+                and Score.GhostName == "Solo_BestGhost"
+            ) {
+                return Score.Time;
+            }
+        }
+
+        Network.TmRaceRules.DataMgr.RetrieveRecordsNoMedals(App.Challenge.EdChallengeId, Network.PlayerInfo.Id);
+
+        return ghostPb;
     }
 
     return MAX_UINT;
