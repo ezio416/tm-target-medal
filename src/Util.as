@@ -22,11 +22,9 @@ enum Medal {
     Duck,
 #if TURBO
     SuperTrackmaster,
-#endif
     SuperGold,
     SuperSilver,
     SuperBronze,
-#if TURBO
     Trackmaster,
 #endif
 #endif
@@ -136,13 +134,6 @@ uint GetMedalTime(const Medal medal) {
             return sb;
         case Medal::Trackmaster:
             return tm;
-#else
-        case Medal::SuperGold:
-            return 0;  // TODO
-        case Medal::SuperSilver:
-            return 0;  // TODO
-        case Medal::SuperBronze:
-            return 0;  // TODO
 #endif
 #endif
 #if !TURBO
