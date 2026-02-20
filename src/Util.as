@@ -267,7 +267,12 @@ uint GetPB() {
     return MAX_UINT;
 
 #elif FOREVER
-    return MAX_UINT;  // TODO, no idea
+    if (Network.PlayerInfo !is null) {
+        // TODO this only returns session pb on servers
+        return Network.PlayerInfo.RaceBestTime;
+    }
+
+    return MAX_UINT;
 
 #endif
 }
@@ -420,7 +425,11 @@ bool InMap() {
     return true
         and GetMap() !is null
         and App.CurrentPlayground !is null
+#if FOREVER
+        and cast<CTrackManiaEditorPuzzle>(App.Editor) !is null
+#else
         and App.Editor is null
+#endif
     ;
 }
 
