@@ -177,8 +177,34 @@ uint GetPB() {
         ""
     );
 
-#else
+#elif MP4
     return MAX_UINT;  // TODO
+
+#elif TURBO
+    auto Network = cast<CTrackManiaNetwork>(App.Network);
+    if (true
+        and Network.PlayerInfo !is null
+        and Network.TmRaceRules !is null
+        and Network.TmRaceRules.DataMgr !is null
+    ) {
+        for (int i = Network.TmRaceRules.DataMgr.Ghosts.Length - 1; i >= 0; i--) {
+            CGameGhostScript@ Ghost = Network.TmRaceRules.DataMgr.Ghosts[i];
+            if (true
+                and Ghost !is null
+                and Ghost.RaceResult !is null
+                and Ghost.RaceResult.Time > 0
+                and Ghost.Nickname == Network.PlayerInfo.Name
+            ) {
+                return uint(Ghost.RaceResult.Time);
+            }
+        }
+    }
+
+    return MAX_UINT;
+
+#elif FOREVER
+    return MAX_UINT;  // TODO, no idea
+
 #endif
 }
 
