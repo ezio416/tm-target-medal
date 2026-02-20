@@ -273,10 +273,27 @@ Medal GetPBMedal() {
                 return Medal::Warrior;
             }
 #endif
-        }
+        }  // Race, Clones
 
 #if !TURBO
         case MapType::Platform:
+#else
+        {
+            const uint stm = GetMedalTime(Medal::SuperTrackmaster);
+            if (stm > 0) {
+                if (pb <= stm) {
+                    return Medal::SuperTrackmaster;
+                }
+                if (pb <= GetMedalTime(Medal::SuperGold)) {
+                    return Medal::SuperGold;
+                }
+                if (pb <= GetMedalTime(Medal::SuperSilver)) {
+                    return Medal::SuperSilver;
+                }
+                if (pb <= GetMedalTime(Medal::SuperBronze)) {
+                    return Medal::SuperBronze;
+                }
+            }
 #endif
             if (pb <= Map.TMObjective_AuthorTime) {
 #if TURBO
@@ -295,6 +312,9 @@ Medal GetPBMedal() {
                 return Medal::Bronze;
             }
             return Medal::None;
+#if TURBO
+        }  // Platform
+#endif
 
 #if !TURBO
         case MapType::Stunt:
