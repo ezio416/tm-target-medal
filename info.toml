@@ -6,4 +6,8 @@ version = "1.2.0"
 siteid = 508
 
 [script]
-optional_dependencies = [ "ChampionMedals", "WarriorMedals" ]
+optional_dependencies = [
+    "ChampionMedals",
+    "DuckMedals",
+    "WarriorMedals"
+]
