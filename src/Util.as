@@ -1,5 +1,7 @@
 const uint MAX_UINT = uint(-1);
 
+dictionary turboPb;
+
 enum MapType {
     Race,
 #if !TURBO
@@ -190,7 +192,12 @@ uint GetPB() {
         and Network.TmRaceRules !is null
         and Network.TmRaceRules.DataMgr !is null
     ) {
-        uint ghostPb = MAX_UINT;
+        Network.TmRaceRules.DataMgr.RetrieveRecordsNoMedals(App.Challenge.EdChallengeId, Network.PlayerInfo.Id);
+
+        uint pb = MAX_UINT;
+        if (turboPb.Exists(App.Challenge.EdChallengeId)) {
+            turboPb.Get(App.Challenge.EdChallengeId, pb);
+        }
 
         for (int i = Network.TmRaceRules.DataMgr.Ghosts.Length - 1; i >= 0; i--) {
             CGameGhostScript@ Ghost = Network.TmRaceRules.DataMgr.Ghosts[i];
@@ -198,9 +205,11 @@ uint GetPB() {
                 and Ghost !is null
                 and Ghost.RaceResult !is null
                 and Ghost.RaceResult.Time > 0
+                and uint(Ghost.RaceResult.Time) < pb
                 and Ghost.Nickname == Network.PlayerInfo.Name
             ) {
-                ghostPb = uint(Ghost.RaceResult.Time);
+                trace("using PB from ghosts");
+                pb = uint(Ghost.RaceResult.Time);
                 break;
             }
         }
@@ -209,16 +218,20 @@ uint GetPB() {
             CGameHighScore@ Score = Network.TmRaceRules.DataMgr.Records[i];
             if (true
                 and Score !is null
-                and Score.Time < ghostPb
+                and Score.Time < pb
                 and Score.GhostName == "Solo_BestGhost"
             ) {
-                return Score.Time;
+                trace("using PB from records");
+                pb = Score.Time;
+                break;
             }
         }
 
-        Network.TmRaceRules.DataMgr.RetrieveRecordsNoMedals(App.Challenge.EdChallengeId, Network.PlayerInfo.Id);
+        if (pb != MAX_UINT) {
+            turboPb.Set(App.Challenge.EdChallengeId, pb);
+        }
 
-        return ghostPb;
+        return pb;
     }
 
     return MAX_UINT;
