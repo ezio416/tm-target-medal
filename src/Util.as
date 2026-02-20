@@ -192,6 +192,9 @@ uint GetPB() {
         and Network.TmRaceRules !is null
         and Network.TmRaceRules.DataMgr !is null
     ) {
+        // this function requires yielding after but we call it anyway so its data is ready on the next frame
+        // using an async system just for turbo pb felt too complicated, might change later
+        // this whole block is very inefficient but works I guess
         Network.TmRaceRules.DataMgr.RetrieveRecordsNoMedals(App.Challenge.EdChallengeId, Network.PlayerInfo.Id);
 
         uint pb = MAX_UINT;
