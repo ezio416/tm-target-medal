@@ -184,7 +184,34 @@ uint GetPB() {
     );
 
 #elif MP4
-    return MAX_UINT;  // TODO
+    if (true
+        and Network.PlayerInfo !is null
+        and Network.TmRaceRules !is null
+        and Network.TmRaceRules.ScoreMgr !is null
+    ) {
+        return Network.TmRaceRules.ScoreMgr.Map_GetRecord(
+            Network.PlayerInfo.Id,
+            App.RootMap.EdChallengeId,
+            ""
+        );
+
+    } else {
+        if (true
+            and App.CurrentPlayground !is null
+            and App.CurrentPlayground.GameTerminals.Length > 0
+            and App.CurrentPlayground.GameTerminals[0] !is null
+        ) {
+            auto Player = cast<CTrackManiaPlayer>(App.CurrentPlayground.GameTerminals[0].GUIPlayer);
+            if (true
+                and Player !is null
+                and Player.Score !is null
+            ) {
+                return Player.Score.BestTime;
+            }
+        }
+    }
+
+    return MAX_UINT;
 
 #elif TURBO
     if (true
