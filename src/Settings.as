@@ -36,7 +36,7 @@ void SettingsTab_General() {
         }
 #endif
 
-        for (int i = Medal::Gold; i <= Medal::Custom; i++) {
+        for (int i = Medal::Gold; i <= Medal::None; i++) {
             medal = Medal(i);
             if (UI::Selectable(tostring(medal), S_Medal == medal)) {
                 S_Medal = medal;
