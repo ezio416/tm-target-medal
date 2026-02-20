@@ -144,9 +144,10 @@ uint GetPB() {
     }
 
     auto App = cast<CTrackMania>(GetApp());
+    auto Network = cast<CTrackManiaNetwork>(App.Network);
 
 #if TMNEXT
-    CGameManiaAppPlayground@ CMAP = App.Network.ClientManiaAppPlayground;
+    CGameManiaAppPlayground@ CMAP = Network.ClientManiaAppPlayground;
 
     if (false
         or CMAP is null
@@ -186,7 +187,6 @@ uint GetPB() {
     return MAX_UINT;  // TODO
 
 #elif TURBO
-    auto Network = cast<CTrackManiaNetwork>(App.Network);
     if (true
         and Network.PlayerInfo !is null
         and Network.TmRaceRules !is null
