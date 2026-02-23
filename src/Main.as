@@ -40,7 +40,14 @@ void Main() {
             continue;
         }
 
-#if MP4
+#if TMNEXT
+        if (App.CurrentPlayground.GameTerminals[0].UISequence_Current != SGamePlaygroundUIConfig::EUISequence::Finish) {
+            continue;
+        }
+
+        sleep(500);  // pb doesn't seem to update instantly
+
+#elif MP4
         auto Player = cast<CTrackManiaPlayer>(App.CurrentPlayground.GameTerminals[0].GUIPlayer);
         if (false
             or Player is null
