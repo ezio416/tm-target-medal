@@ -94,6 +94,33 @@ MapType GetMapType() {
     return MapType::Race;
 }
 
+vec3 GetMedalColor(const Medal medal) {
+    switch (medal) {
+#if TMNEXT
+        case Medal::Champion:         return S_ColorChampion;
+        case Medal::Warrior:          return S_ColorWarrior;
+#elif MP4 || TURBO
+        case Medal::Duck:             return S_ColorDuck;
+#endif
+#if TURBO
+        case Medal::SuperTrackmaster: return S_ColorSuperTrackmaster;
+        case Medal::SuperGold:        return S_ColorSuperGold;
+        case Medal::SuperSilver:      return S_ColorSuperSilver;
+        case Medal::SuperBronze:      return S_ColorSuperBronze;
+        case Medal::Trackmaster:      return S_ColorTrackmaster;
+#else
+        case Medal::Author:           return S_ColorAuthor;
+#endif
+        case Medal::Gold:             return S_ColorGold;
+        case Medal::Silver:           return S_ColorSilver;
+        case Medal::Bronze:           return S_ColorBronze;
+        case Medal::Finish:           return S_ColorFinish;
+        case Medal::Custom:           return S_ColorCustom;
+    }
+
+    return vec3();
+}
+
 uint GetMedalTime(const Medal medal) {
     CGameCtnChallenge@ Map = GetMap();
 
@@ -482,6 +509,10 @@ bool InMap() {
 }
 
 void MenuRadioButton(const Medal medal, const uint time) {
+    const vec4 color = vec4(GetMedalColor(medal), 1.0f);
+    UI::PushStyleColor(UI::Col::CheckMark, color);
+    UI::PushStyleColor(UI::Col::Text,      color);
+
     UI::BeginDisabled(true
         and medal != Medal::Custom
         and medal != Medal::Finish
@@ -492,6 +523,8 @@ void MenuRadioButton(const Medal medal, const uint time) {
         S_Medal = medal;
     }
     UI::EndDisabled();
+
+    UI::PopStyleColor(2);
 }
 
 void Notify(const string&in msg, const vec3&in color = vec3()) {
@@ -500,7 +533,10 @@ void Notify(const string&in msg, const vec3&in color = vec3()) {
 }
 
 void NotifyAchieved(const uint pb, const uint target) {
-    Notify("congrats! " + tostring(S_Medal) + " achieved by " + Time::Format(target - pb));
+    Notify(
+        "congrats! " + tostring(S_Medal) + " achieved by " + Time::Format(target - pb),
+        GetMedalColor(S_Medal)
+    );
 }
 
 void NotifyOnEnter(const uint pb, const uint target) {
@@ -514,7 +550,10 @@ void NotifyOnEnter(const uint pb, const uint target) {
 }
 
 void NotifyTooSlow(const uint pb, const uint target) {
-    Notify("bummer! you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal));
+    Notify(
+        "bummer! you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal),
+        vec3(0.8f, 0.5f, 0.0f)
+    );
 }
 
 uint OnEnteredMap() {
