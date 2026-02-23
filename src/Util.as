@@ -57,7 +57,7 @@ uint GetDuckTime() {
 CGameCtnChallenge@ GetMap() {
 #if TMNEXT || MP4
     return GetApp().RootMap;
-#elif TURBO || FOREVER
+#else
     return GetApp().Challenge;
 #endif
 }
@@ -78,7 +78,7 @@ MapType GetMapType() {
     }
 #endif
 
-#if !TURBO
+#if TMNEXT
     if (Map.MapType.Contains("TM_Stunt")) {
         return MapType::Stunt;
     }
@@ -94,7 +94,10 @@ MapType GetMapType() {
 uint GetMedalTime(const Medal medal) {
     CGameCtnChallenge@ Map = GetMap();
 
-    if (Map is null) {
+    if (false
+        or Map is null
+        or Map.ChallengeParameters is null
+    ) {
         return 0;
     }
 
@@ -138,14 +141,14 @@ uint GetMedalTime(const Medal medal) {
 #endif
 #if !TURBO
         case Medal::Author:
-            return Map.TMObjective_AuthorTime;
+            return Map.ChallengeParameters.AuthorTime;
 #endif
         case Medal::Gold:
-            return Map.TMObjective_GoldTime;
+            return Map.ChallengeParameters.GoldTime;
         case Medal::Silver:
-            return Map.TMObjective_SilverTime;
+            return Map.ChallengeParameters.SilverTime;
         case Medal::Bronze:
-            return Map.TMObjective_BronzeTime;
+            return Map.ChallengeParameters.BronzeTime;
         case Medal::Custom:
             return S_Custom;
         default:
@@ -299,6 +302,12 @@ Medal GetPBMedal() {
     }
 
     CGameCtnChallenge@ Map = GetMap();
+    if (false
+        or Map is null
+        or Map.ChallengeParameters is null
+    ) {
+        return Medal::None;
+    }
 
     switch (GetMapType()) {
         case MapType::Race:
@@ -389,20 +398,20 @@ Medal GetPBMedal() {
                 }
             }
 #endif
-            if (pb <= Map.TMObjective_AuthorTime) {
+            if (pb <= Map.ChallengeParameters.AuthorTime) {
 #if TURBO
                 return Medal::Trackmaster;
 #else
                 return Medal::Author;
 #endif
             }
-            if (pb <= Map.TMObjective_GoldTime) {
+            if (pb <= Map.ChallengeParameters.GoldTime) {
                 return Medal::Gold;
             }
-            if (pb <= Map.TMObjective_SilverTime) {
+            if (pb <= Map.ChallengeParameters.SilverTime) {
                 return Medal::Silver;
             }
-            if (pb <= Map.TMObjective_BronzeTime) {
+            if (pb <= Map.ChallengeParameters.BronzeTime) {
                 return Medal::Bronze;
             }
             return Medal::None;
@@ -412,16 +421,16 @@ Medal GetPBMedal() {
 
 #if !TURBO
         case MapType::Stunt:
-            if (pb >= Map.TMObjective_AuthorTime) {
+            if (pb >= Map.ChallengeParameters.AuthorTime) {
                 return Medal::Author;
             }
-            if (pb >= Map.TMObjective_GoldTime) {
+            if (pb >= Map.ChallengeParameters.GoldTime) {
                 return Medal::Gold;
             }
-            if (pb >= Map.TMObjective_SilverTime) {
+            if (pb >= Map.ChallengeParameters.SilverTime) {
                 return Medal::Silver;
             }
-            if (pb >= Map.TMObjective_BronzeTime) {
+            if (pb >= Map.ChallengeParameters.BronzeTime) {
                 return Medal::Bronze;
             }
             return Medal::None;
@@ -445,7 +454,7 @@ uint GetWarriorTime() {
 }
 
 bool InMap() {
-    CGameCtnApp@ App = GetApp();
+    auto App = cast<CTrackMania>(GetApp());
 
     return true
         and GetMap() !is null

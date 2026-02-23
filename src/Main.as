@@ -30,6 +30,7 @@ void Main() {
 
 #if !TURBO
 
+#if TMNEXT || MP4
         if (false
             or !S_Enabled
             or !inMap
@@ -39,6 +40,7 @@ void Main() {
             lastPB = newPB = MAX_UINT;
             continue;
         }
+#endif
 
 #if TMNEXT
         if (App.CurrentPlayground.GameTerminals[0].UISequence_Current != SGamePlaygroundUIConfig::EUISequence::Finish) {
