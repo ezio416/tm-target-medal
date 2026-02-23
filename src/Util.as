@@ -57,7 +57,7 @@ uint GetDuckTime() {
 CGameCtnChallenge@ GetMap() {
 #if TMNEXT || MP4
     return GetApp().RootMap;
-#else
+#elif TURBO || FOREVER
     return GetApp().Challenge;
 #endif
 }
