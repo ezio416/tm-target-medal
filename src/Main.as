@@ -16,6 +16,8 @@ void Main() {
 
     auto App = cast<CTrackMania>(GetApp());
 
+    // TODO init all turbo PBs
+
     while (true) {
         yield();
 
@@ -173,6 +175,13 @@ void RenderMenu() {
         MenuRadioButton(Medal::Gold, gt);
         MenuRadioButton(Medal::Silver, st);
         MenuRadioButton(Medal::Bronze, bt);
+        MenuRadioButton(Medal::Finish, 0);
+
+        MenuRadioButton(Medal::Custom, S_Custom);
+        UI::BeginDisabled(S_Medal != Medal::Custom);
+        UI::SetNextItemWidth(UI::GetScale() * 200.0f);
+        S_Custom = Math::Clamp(UI::InputInt("ms", S_Custom), 0, MAX_INT);
+        UI::EndDisabled();
 
         UI::EndMenu();
     }

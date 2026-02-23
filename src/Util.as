@@ -1,3 +1,4 @@
+const int  MAX_INT  = 2147483647;
 const uint MAX_UINT = uint(-1);
 
 dictionary turboPb;
@@ -16,26 +17,26 @@ enum MapType {
 
 enum Medal {
 #if TMNEXT
-    Champion,
-    Warrior,
+    Champion         = 0,
+    Warrior          = 1,
 #elif TURBO || MP4
-    Duck,
+    Duck             = 2,
+#endif
 #if TURBO
-    SuperTrackmaster,
-    SuperGold,
-    SuperSilver,
-    SuperBronze,
-    Trackmaster,
+    SuperTrackmaster = 3,
+    SuperGold        = 4,
+    SuperSilver      = 5,
+    SuperBronze      = 6,
+    Trackmaster      = 7,
+#else
+    Author           = 8,
 #endif
-#endif
-#if !TURBO
-    Author,
-#endif
-    Gold,
-    Silver,
-    Bronze,
-    Custom,
-    None
+    Gold             = 9,
+    Silver           = 10,
+    Bronze           = 11,
+    Finish           = 12,
+    Custom           = 13,
+    None             = 14
 }
 
 uint GetChampionTime() {
@@ -87,6 +88,8 @@ MapType GetMapType() {
         return MapType::Platform;
     }
 #endif
+
+    // TODO stunt/platform on forever
 
     return MapType::Race;
 }
@@ -294,6 +297,8 @@ uint GetPB() {
         return Network.PlayerInfo.RaceBestTime;
     }
 
+    // TODO stunt, platform
+
     return MAX_UINT;
 #endif
 }
@@ -417,6 +422,9 @@ Medal GetPBMedal() {
             if (pb <= Map.ChallengeParameters.BronzeTime) {
                 return Medal::Bronze;
             }
+            if (pb < MAX_UINT) {
+                return Medal::Finish;
+            }
             return Medal::None;
 #if TURBO
         }  // Platform
@@ -435,6 +443,9 @@ Medal GetPBMedal() {
             }
             if (pb >= Map.ChallengeParameters.BronzeTime) {
                 return Medal::Bronze;
+            }
+            if (pb > 0) {
+                return Medal::Finish;
             }
             return Medal::None;
 #endif
@@ -471,7 +482,11 @@ bool InMap() {
 }
 
 void MenuRadioButton(const Medal medal, const uint time) {
-    UI::BeginDisabled(time == 0);
+    UI::BeginDisabled(true
+        and time == 0
+        and medal != Medal::Custom
+        and medal != Medal::Finish
+    );
     if (UI::RadioButton(GetMedalTimeText(tostring(medal), time), S_Medal == medal)) {
         S_Medal = medal;
     }

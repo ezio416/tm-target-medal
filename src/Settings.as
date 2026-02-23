@@ -38,7 +38,7 @@ void SettingsTab_General() {
         }
 #endif
 
-        for (int i = Medal::Gold; i <= Medal::None; i++) {
+        for (int i = Medal::Gold; i <= Medal::Custom; i++) {
             medal = Medal(i);
             if (UI::Selectable(tostring(medal), S_Medal == medal)) {
                 S_Medal = medal;
@@ -46,6 +46,10 @@ void SettingsTab_General() {
         }
 
         UI::EndCombo();
+    }
+
+    if (S_Medal == Medal::Custom) {
+        S_Custom = Math::Clamp(UI::InputInt("ms", S_Custom), 0, MAX_INT);
     }
 }
 
@@ -76,5 +80,6 @@ void SettingsTab_Debug() {
         UI::Text("gold: "              + GetMedalTime(Medal::Gold));
         UI::Text("silver: "            + GetMedalTime(Medal::Silver));
         UI::Text("bronze: "            + GetMedalTime(Medal::Bronze));
+        UI::Text("custom: "            + S_Custom);
     }
 }
