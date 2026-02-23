@@ -525,6 +525,7 @@ uint OnEnteredMap() {
     if (true
         and S_Enabled
         and S_NotifyOnEnter
+        and S_Medal != Medal::Finish
     ) {
         NotifyOnEnter(pb, GetTargetTime());  // TODO change target when medal doesn't exist
     }
