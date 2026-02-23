@@ -4,6 +4,10 @@ Meta::Plugin@ pluginMeta  = Meta::ExecutingPlugin();
 const string  pluginTitle = pluginColor + pluginIcon + "\\$G " + pluginMeta.Name;
 
 void Main() {
+#if TURBO
+    HookSetPB();
+#endif
+
     bool inMap = false;
     bool wasInMap = false;
 
@@ -23,20 +27,12 @@ void Main() {
     }
 }
 
-void Render() {
-    if (false
-        or !S_Enabled
-        or (true
-            and S_HideWithGame
-            and !UI::IsGameUIVisible()
-        )
-        or (true
-            and S_HideWithOP
-            and !UI::IsOverlayShown()
-        )
-    ) {
-        return;
-    }
+#if TURBO
+void OnDestroyed() { UnhookSetPB(); }
+void OnDisabled() { UnhookSetPB(); }
+void OnEnabled() { HookSetPB(); }
+#endif
+
 
     if (UI::Begin(pluginTitle + "###main-" + pluginMeta.ID, S_Enabled)) {
         RenderWindow();
