@@ -502,7 +502,7 @@ uint OnEnteredMap() {
         and S_Enabled
         and S_NotifyOnEnter
     ) {
-        NotifyOnEnter(pb, GetTargetTime());
+        NotifyOnEnter(pb, GetTargetTime());  // TODO change target when medal doesn't exist
     }
 
     return pb;

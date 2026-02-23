@@ -143,13 +143,34 @@ void RenderMenu() {
         const uint bt = GetMedalTime(Medal::Bronze);
 
 #if DEPENDENCY_CHAMPIONMEDALS && DEPENDENCY_WARRIORMEDALS
-        // TODO
+        if (cm <= wm) {
+            if (UI::RadioButton(GetMedalTimeText("Champion", cm), S_Medal == Medal::Champion)) {
+                S_Medal = Medal::Champion;
+            }
+
+            if (UI::RadioButton(GetMedalTimeText("Warrior", wm), S_Medal == Medal::Warrior)) {
+                S_Medal = Medal::Warrior;
+            }
+
+        } else {
+            if (UI::RadioButton(GetMedalTimeText("Warrior", wm), S_Medal == Medal::Warrior)) {
+                S_Medal = Medal::Warrior;
+            }
+
+            if (UI::RadioButton(GetMedalTimeText("Champion", cm), S_Medal == Medal::Champion)) {
+                S_Medal = Medal::Champion;
+            }
+        }
 
 #elif DEPENDENCY_CHAMPIONMEDALS
-        // TODO
+        if (UI::RadioButton(GetMedalTimeText("Champion", cm), S_Medal == Medal::Champion)) {
+            S_Medal = Medal::Champion;
+        }
 
 #elif DEPENDENCY_WARRIORMEDALS
-        // TODO
+        if (UI::RadioButton(GetMedalTimeText("Warrior", wm), S_Medal == Medal::Warrior)) {
+            S_Medal = Medal::Warrior;
+        }
 #endif
 
 #if DEPENDENCY_DUCKMEDALS
