@@ -496,7 +496,7 @@ void NotifyTooSlow(const uint pb, const uint target) {
 uint OnEnteredMap() {
     print("OnEnteredMap");
 
-    const uint pb = GetPB();
+    const uint pb = GetPB();  // TODO doesn't always work on turbo
 
     if (true
         and S_Enabled

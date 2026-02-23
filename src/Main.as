@@ -159,7 +159,21 @@ void RenderMenu() {
 #endif
 
 #if TURBO
-        // TODO super medals
+        if (UI::RadioButton(GetMedalTimeText("Super Trackmaster", stm), S_Medal == Medal::SuperTrackmaster)) {
+            S_Medal = Medal::SuperTrackmaster;
+        }
+
+        if (UI::RadioButton(GetMedalTimeText("Super Gold", sg), S_Medal == Medal::SuperGold)) {
+            S_Medal = Medal::SuperGold;
+        }
+
+        if (UI::RadioButton(GetMedalTimeText("Super Silver", ss), S_Medal == Medal::SuperSilver)) {
+            S_Medal = Medal::SuperSilver;
+        }
+
+        if (UI::RadioButton(GetMedalTimeText("Super Bronze", sb), S_Medal == Medal::SuperBronze)) {
+            S_Medal = Medal::SuperBronze;
+        }
 
         if (UI::RadioButton(GetMedalTimeText("Trackmaster", tm), S_Medal == Medal::Trackmaster)) {
             S_Medal = Medal::Trackmaster;
