@@ -25,6 +25,8 @@ void Main() {
 
             if (inMap) {
                 lastPB = OnEnteredMap();
+            } else {
+                // TODO handle plugin medals
             }
         }
 
@@ -117,10 +119,69 @@ void OnEnabled() { HookSetPB(); }
 void RenderMenu() {
     if (UI::BeginMenu(pluginTitle)) {
         S_Enabled = UI::Checkbox("Enabled", S_Enabled);
+        S_NotifyOnEnter = UI::Checkbox("Notify when entering map", S_NotifyOnEnter);
 
         UI::Separator();
 
+#if TMNEXT
+        const uint cm = GetMedalTime(Medal::Champion);
+        const uint wm = GetMedalTime(Medal::Warrior);
+#elif MP4 || TURBO
+        const uint dm = GetMedalTime(Medal::Duck);
+#endif
+#if TURBO
+        const uint stm = GetMedalTime(Medal::SuperTrackmaster);
+        const uint sg = GetMedalTime(Medal::SuperGold);
+        const uint ss = GetMedalTime(Medal::SuperSilver);
+        const uint sb = GetMedalTime(Medal::SuperBronze);
+        const uint tm = GetMedalTime(Medal::Trackmaster);
+#else
+        const uint at = GetMedalTime(Medal::Author);
+#endif
+        const uint gt = GetMedalTime(Medal::Gold);
+        const uint st = GetMedalTime(Medal::Silver);
+        const uint bt = GetMedalTime(Medal::Bronze);
+
+#if DEPENDENCY_CHAMPIONMEDALS && DEPENDENCY_WARRIORMEDALS
         // TODO
+
+#elif DEPENDENCY_CHAMPIONMEDALS
+        // TODO
+
+#elif DEPENDENCY_WARRIORMEDALS
+        // TODO
+#endif
+
+#if DEPENDENCY_DUCKMEDALS
+        if (UI::RadioButton(GetMedalTimeText("Duck", dm), S_Medal == Medal::Duck)) {
+            S_Medal = Medal::Duck;
+        }
+#endif
+
+#if TURBO
+        // TODO super medals
+
+        if (UI::RadioButton(GetMedalTimeText("Trackmaster", tm), S_Medal == Medal::Trackmaster)) {
+            S_Medal = Medal::Trackmaster;
+        }
+
+#else
+        if (UI::RadioButton(GetMedalTimeText("Author", at), S_Medal == Medal::Author)) {
+            S_Medal = Medal::Author;
+        }
+#endif
+
+        if (UI::RadioButton(GetMedalTimeText("Gold", gt), S_Medal == Medal::Gold)) {
+            S_Medal = Medal::Gold;
+        }
+
+        if (UI::RadioButton(GetMedalTimeText("Silver", st), S_Medal == Medal::Silver)) {
+            S_Medal = Medal::Silver;
+        }
+
+        if (UI::RadioButton(GetMedalTimeText("Bronze", bt), S_Medal == Medal::Bronze)) {
+            S_Medal = Medal::Bronze;
+        }
 
         UI::EndMenu();
     }

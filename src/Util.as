@@ -156,6 +156,10 @@ uint GetMedalTime(const Medal medal) {
     }
 }
 
+string GetMedalTimeText(const string&in name, const uint time) {
+    return name + (time > 0 ? " (" + Time::Format(time) + ")" : "");
+}
+
 uint GetPB() {
     if (!InMap()) {
         return MAX_UINT;
