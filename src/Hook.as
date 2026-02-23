@@ -54,4 +54,20 @@ void UnhookSetPB() {
     }
 }
 
+#elif MP4
+
+// unused but keeping here in case I want to use it in the future
+// debugger says the new PB is in eax but my hook always returns 0xCB0840
+// sadly there isn't a hook like Turbo that has old and new PB
+// all other hooks I can find use xmm registers which aren't accessible yet
+
+// Dev::HookInfo@ hookSetPB;
+// const string   hookSetPBPattern = "89 87 B8 00 00 00 48 8D 8F C0 00 00 00";
+
+// void SetPB(const uint64 rax) {
+//     if (GetApp().RootMap !is null) {
+//         print("SetPB new: " + Time::Format(rax) + " | " + Text::FormatPointer(rax));
+//     }
+// }
+
 #endif
