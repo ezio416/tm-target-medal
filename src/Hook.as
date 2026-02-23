@@ -34,13 +34,9 @@ void SetPB(const uint ebx, const uint ebp) {
                     and ebx > target
                     and ebp <= target
                 ) {
-                    const string msg = "congrats! " + tostring(S_Medal) + " achieved by " + Time::Format(target - ebp);
-                    print(msg);
-                    UI::ShowNotification(pluginTitle, msg);
+                    NotifyAchieved(ebp, target);
                 } else {
-                    const string msg = "bummer! you still need " + Time::Format(ebp - target) + " for " + tostring(S_Medal);
-                    print(msg);
-                    UI::ShowNotification(pluginTitle, msg);
+                    NotifyTooSlow(ebp, target);
                 }
             }
         }

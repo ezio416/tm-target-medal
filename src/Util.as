@@ -458,39 +458,40 @@ bool InMap() {
     ;
 }
 
-void OnEnteredMap() {
+void Notify(const string&in msg, const vec3&in color = vec3()) {
+    print(msg);
+    UI::ShowNotification(pluginTitle, msg, vec4(color, 1.0f));
+}
+
+void NotifyAchieved(const uint pb, const uint target) {
+    Notify("congrats! " + tostring(S_Medal) + " achieved by " + Time::Format(target - pb));
+}
+
+void NotifyOnEnter(const uint pb, const uint target) {
+    if (pb > target) {
+        Notify(
+            pb == MAX_UINT
+                ? tostring(S_Medal) + " is " + Time::Format(target)
+                : "you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal)
+        );
+    }
+}
+
+void NotifyTooSlow(const uint pb, const uint target) {
+    Notify("bummer! you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal));
+}
+
+uint OnEnteredMap() {
     print("OnEnteredMap");
+
+    const uint pb = GetPB();
 
     if (true
         and S_Enabled
         and S_NotifyOnEnter
     ) {
-        const uint pb = GetPB();
-        const uint target = GetTargetTime();
-        if (pb > target) {
-            string msg;
-            if (pb != MAX_UINT) {
-                msg = "you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal);
-            } else {
-                msg = tostring(S_Medal) + " is " + Time::Format(target);
-            }
-            print(msg);
-            UI::ShowNotification(pluginTitle, msg);
-        }
+        NotifyOnEnter(pb, GetTargetTime());
     }
-}
 
-void PBLoopAsync() {
-    while (true) {
-        sleep(100);
-
-        if (false
-            or !S_Enabled
-            or !InMap()
-        ) {
-            continue;
-        }
-
-        // TODO
-    }
+    return pb;
 }
