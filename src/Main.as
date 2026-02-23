@@ -57,6 +57,9 @@ void Main() {
         ) {
             continue;
         }
+
+#elif FOREVER
+        // TODO detect finish sequence
 #endif
 
         newPB = GetPB();
@@ -64,6 +67,10 @@ void Main() {
         if (lastPB != newPB) {
             lastPB = newPB;
             target = GetTargetTime();
+
+            if (newPB == MAX_UINT) {
+                continue;
+            }
 
             if (true
                 and lastPB > target
