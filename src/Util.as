@@ -291,7 +291,6 @@ uint GetPB() {
     }
 
     return MAX_UINT;
-
 #endif
 }
 
