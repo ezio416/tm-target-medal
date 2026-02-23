@@ -144,79 +144,35 @@ void RenderMenu() {
 
 #if DEPENDENCY_CHAMPIONMEDALS && DEPENDENCY_WARRIORMEDALS
         if (cm <= wm) {
-            if (UI::RadioButton(GetMedalTimeText("Champion", cm), S_Medal == Medal::Champion)) {
-                S_Medal = Medal::Champion;
-            }
-
-            if (UI::RadioButton(GetMedalTimeText("Warrior", wm), S_Medal == Medal::Warrior)) {
-                S_Medal = Medal::Warrior;
-            }
-
-        } else {
-            if (UI::RadioButton(GetMedalTimeText("Warrior", wm), S_Medal == Medal::Warrior)) {
-                S_Medal = Medal::Warrior;
-            }
-
-            if (UI::RadioButton(GetMedalTimeText("Champion", cm), S_Medal == Medal::Champion)) {
-                S_Medal = Medal::Champion;
-            }
+            MenuRadioButton(Medal::Champion, cm);
+            MenuRadioButton(Medal::Warrior, wm);
+        } else {  // just swap order
+            MenuRadioButton(Medal::Warrior, wm);
+            MenuRadioButton(Medal::Champion, cm);
         }
-
 #elif DEPENDENCY_CHAMPIONMEDALS
-        if (UI::RadioButton(GetMedalTimeText("Champion", cm), S_Medal == Medal::Champion)) {
-            S_Medal = Medal::Champion;
-        }
-
+        MenuRadioButton(Medal::Champion, cm);
 #elif DEPENDENCY_WARRIORMEDALS
-        if (UI::RadioButton(GetMedalTimeText("Warrior", wm), S_Medal == Medal::Warrior)) {
-            S_Medal = Medal::Warrior;
-        }
+        MenuRadioButton(Medal::Warrior, wm);
 #endif
 
 #if DEPENDENCY_DUCKMEDALS
-        if (UI::RadioButton(GetMedalTimeText("Duck", dm), S_Medal == Medal::Duck)) {
-            S_Medal = Medal::Duck;
-        }
+        MenuRadioButton(Medal::Duck, dm);
 #endif
 
 #if TURBO
-        if (UI::RadioButton(GetMedalTimeText("Super Trackmaster", stm), S_Medal == Medal::SuperTrackmaster)) {
-            S_Medal = Medal::SuperTrackmaster;
-        }
-
-        if (UI::RadioButton(GetMedalTimeText("Super Gold", sg), S_Medal == Medal::SuperGold)) {
-            S_Medal = Medal::SuperGold;
-        }
-
-        if (UI::RadioButton(GetMedalTimeText("Super Silver", ss), S_Medal == Medal::SuperSilver)) {
-            S_Medal = Medal::SuperSilver;
-        }
-
-        if (UI::RadioButton(GetMedalTimeText("Super Bronze", sb), S_Medal == Medal::SuperBronze)) {
-            S_Medal = Medal::SuperBronze;
-        }
-
-        if (UI::RadioButton(GetMedalTimeText("Trackmaster", tm), S_Medal == Medal::Trackmaster)) {
-            S_Medal = Medal::Trackmaster;
-        }
-
+        MenuRadioButton(Medal::SuperTrackmaster, stm);
+        MenuRadioButton(Medal::SuperGold, sg);
+        MenuRadioButton(Medal::SuperSilver, ss);
+        MenuRadioButton(Medal::SuperBronze, sb);
+        MenuRadioButton(Medal::Trackmaster, tm);
 #else
-        if (UI::RadioButton(GetMedalTimeText("Author", at), S_Medal == Medal::Author)) {
-            S_Medal = Medal::Author;
-        }
+        MenuRadioButton(Medal::Author, at);
 #endif
 
-        if (UI::RadioButton(GetMedalTimeText("Gold", gt), S_Medal == Medal::Gold)) {
-            S_Medal = Medal::Gold;
-        }
-
-        if (UI::RadioButton(GetMedalTimeText("Silver", st), S_Medal == Medal::Silver)) {
-            S_Medal = Medal::Silver;
-        }
-
-        if (UI::RadioButton(GetMedalTimeText("Bronze", bt), S_Medal == Medal::Bronze)) {
-            S_Medal = Medal::Bronze;
-        }
+        MenuRadioButton(Medal::Gold, gt);
+        MenuRadioButton(Medal::Silver, st);
+        MenuRadioButton(Medal::Bronze, bt);
 
         UI::EndMenu();
     }

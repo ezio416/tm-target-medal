@@ -470,6 +470,14 @@ bool InMap() {
     ;
 }
 
+void MenuRadioButton(const Medal medal, const uint time) {
+    UI::BeginDisabled(time == 0);
+    if (UI::RadioButton(GetMedalTimeText(tostring(medal), time), S_Medal == medal)) {
+        S_Medal = medal;
+    }
+    UI::EndDisabled();
+}
+
 void Notify(const string&in msg, const vec3&in color = vec3()) {
     print(msg);
     UI::ShowNotification(pluginTitle, msg, vec4(color, 1.0f));
