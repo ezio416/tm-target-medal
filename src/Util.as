@@ -483,9 +483,10 @@ bool InMap() {
 
 void MenuRadioButton(const Medal medal, const uint time) {
     UI::BeginDisabled(true
-        and time == 0
         and medal != Medal::Custom
         and medal != Medal::Finish
+        and time == 0
+        and InMap()
     );
     if (UI::RadioButton(GetMedalTimeText(tostring(medal), time), S_Medal == medal)) {
         S_Medal = medal;
