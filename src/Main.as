@@ -11,6 +11,11 @@ void Main() {
     bool inMap = false;
     bool wasInMap = false;
 
+    uint lastPB, newPB, target;
+    lastPB = newPB = MAX_UINT;
+
+    auto App = cast<CTrackMania>(GetApp());
+
     while (true) {
         yield();
 
@@ -19,9 +24,50 @@ void Main() {
             wasInMap = inMap;
 
             if (inMap) {
-                OnEnteredMap();
+                lastPB = OnEnteredMap();
             }
         }
+
+#if !TURBO
+
+        if (false
+            or !S_Enabled
+            or !inMap
+            or App.CurrentPlayground.GameTerminals.Length == 0
+            or App.CurrentPlayground.GameTerminals[0] is null
+        ) {
+            lastPB = newPB = MAX_UINT;
+            continue;
+        }
+
+#if MP4
+        auto Player = cast<CTrackManiaPlayer>(App.CurrentPlayground.GameTerminals[0].GUIPlayer);
+        if (false
+            or Player is null
+            or Player.RaceState != CTrackManiaPlayer::ERaceState::Finished
+        ) {
+            continue;
+        }
+#endif
+
+        newPB = GetPB();
+
+        if (lastPB != newPB) {
+            lastPB = newPB;
+            target = GetTargetTime();
+
+            if (true
+                and lastPB > target
+                and newPB <= target
+            ) {
+                NotifyAchieved(newPB, target);
+            } else {
+                NotifyTooSlow(newPB, target);
+            }
+        }
+
+#endif
+
     }
 }
 
