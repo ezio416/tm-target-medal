@@ -20,8 +20,6 @@ void Main() {
 
             if (inMap) {
                 OnEnteredMap();
-            } else {
-                OnExitedMap();
             }
         }
     }

@@ -1,12 +1,14 @@
-[Setting hidden] uint  S_Custom       = 0;
-[Setting hidden] bool  S_Enabled      = true;
-[Setting hidden] bool  S_HideWithGame = true;
-[Setting hidden] bool  S_HideWithOP   = false;
-[Setting hidden] Medal S_Medal        = Medal::None;
+[Setting hidden] uint  S_Custom        = 0;
+[Setting hidden] bool  S_Enabled       = true;
+[Setting hidden] bool  S_HideWithGame  = true;
+[Setting hidden] bool  S_HideWithOP    = false;
+[Setting hidden] Medal S_Medal         = Medal::None;
+[Setting hidden] bool  S_NotifyOnEnter = false;
 
 [SettingsTab name="General" icon="Cog" order=0]
 void SettingsTab_General() {
     S_Enabled = UI::Checkbox("Enabled", S_Enabled);
+    S_NotifyOnEnter = UI::Checkbox("Notify when entering map", S_NotifyOnEnter);
 
     if (UI::BeginCombo("Medal", tostring(S_Medal), UI::ComboFlags::HeightLargest)) {
 #if DEPENDENCY_CHAMPIONMEDALS

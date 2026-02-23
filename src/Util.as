@@ -461,12 +461,23 @@ bool InMap() {
 void OnEnteredMap() {
     print("OnEnteredMap");
 
-    const uint pb = GetPB();
-    // TODO
-}
-
-void OnExitedMap() {
-    print("OnExitedMap");
+    if (true
+        and S_Enabled
+        and S_NotifyOnEnter
+    ) {
+        const uint pb = GetPB();
+        const uint target = GetTargetTime();
+        if (pb > target) {
+            string msg;
+            if (pb != MAX_UINT) {
+                msg = "you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal);
+            } else {
+                msg = tostring(S_Medal) + " is " + Time::Format(target);
+            }
+            print(msg);
+            UI::ShowNotification(pluginTitle, msg);
+        }
+    }
 }
 
 void PBLoopAsync() {
