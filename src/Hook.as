@@ -21,23 +21,24 @@ void HookSetPB() {
 
 void SetPB(const uint ebx, const uint ebp) {
     // ebx is the last pb, ebp is the new one
+    // game seems to call this for every map on boot and for the current map on PB
     // sometimes ebx is 0 and ebp is 1 so we compare them first
-    if (ebp < ebx) {
-        print("SetPB: old " + Time::Format(ebx) + ", new " + Time::Format(ebp));
+    if (true
+        and ebp < ebx
+        and InMap()
+    ) {
+        trace("SetPB: old " + Time::Format(ebx) + ", new " + Time::Format(ebp));
+        turboPb.Set(GetMap().EdChallengeId, ebp);
 
-        if (InMap()) {
-            turboPb.Set(GetMap().EdChallengeId, ebp);
-
-            if (S_Enabled) {
-                const uint target = GetTargetTime();
-                if (true
-                    and ebx > target
-                    and ebp <= target
-                ) {
-                    NotifyAchieved(ebp, target);
-                } else {
-                    NotifyTooSlow(ebp, target);
-                }
+        if (S_Enabled) {
+            const uint target = GetTargetTime();
+            if (true
+                and ebx > target
+                and ebp <= target
+            ) {
+                NotifyAchieved(ebp, target);
+            } else {
+                NotifyTooSlow(ebp, target);
             }
         }
     }
