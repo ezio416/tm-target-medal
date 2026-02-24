@@ -46,9 +46,17 @@ void Main() {
         }
 #endif
 
+        const MapType type = GetMapType();
+
 #if TMNEXT
-        if (App.CurrentPlayground.GameTerminals[0].UISequence_Current != SGamePlaygroundUIConfig::EUISequence::Finish) {
-            continue;
+        const SGamePlaygroundUIConfig::EUISequence sequence = App.CurrentPlayground.GameTerminals[0].UISequence_Current;
+        if (sequence != SGamePlaygroundUIConfig::EUISequence::Finish) {
+            if (false
+                or type != MapType::Stunt
+                or sequence != SGamePlaygroundUIConfig::EUISequence::UIInteraction
+            ) {
+                continue;
+            }
         }
 
         sleep(500);  // pb doesn't seem to update instantly
@@ -69,21 +77,38 @@ void Main() {
         newPB = GetPB();
 
         if (lastPB != newPB) {
-            lastPB = newPB;
             target = GetTargetTime();
 
             if (newPB == MAX_UINT) {
+                lastPB = newPB;
+                continue;
+            } else if (S_Medal == Medal::Finish) {
+                NotifyAchieved(newPB, target, type);
+                lastPB = newPB;
                 continue;
             }
 
-            if (true
-                and lastPB > target
-                and newPB <= target
-            ) {
-                NotifyAchieved(newPB, target);
+            bool achieved = false;
+
+            if (type == MapType::Stunt) {
+                achieved = (true
+                    and lastPB < target
+                    and newPB >= target
+                );
             } else {
-                NotifyTooSlow(newPB, target);
+                achieved = (true
+                    and lastPB > target
+                    and newPB <= target
+                );
             }
+
+            if (achieved) {
+                NotifyAchieved(newPB, target, type);
+            } else {
+                NotifyTooSlow(newPB, target, type);
+            }
+
+            lastPB = newPB;
         }
 
 #endif
@@ -144,43 +169,45 @@ void RenderMenu() {
         const uint st = GetMedalTime(Medal::Silver);
         const uint bt = GetMedalTime(Medal::Bronze);
 
+        const MapType type = GetMapType();
+
 #if DEPENDENCY_CHAMPIONMEDALS && DEPENDENCY_WARRIORMEDALS
         if (cm <= wm) {
-            MenuRadioButton(Medal::Champion, cm);
-            MenuRadioButton(Medal::Warrior, wm);
+            MenuRadioButton(Medal::Champion, cm, type);
+            MenuRadioButton(Medal::Warrior, wm, type);
         } else {  // just swap order
-            MenuRadioButton(Medal::Warrior, wm);
-            MenuRadioButton(Medal::Champion, cm);
+            MenuRadioButton(Medal::Warrior, wm, type);
+            MenuRadioButton(Medal::Champion, cm, type);
         }
 #elif DEPENDENCY_CHAMPIONMEDALS
-        MenuRadioButton(Medal::Champion, cm);
+        MenuRadioButton(Medal::Champion, cm, type);
 #elif DEPENDENCY_WARRIORMEDALS
-        MenuRadioButton(Medal::Warrior, wm);
+        MenuRadioButton(Medal::Warrior, wm, type);
 #endif
 
 #if DEPENDENCY_DUCKMEDALS
-        MenuRadioButton(Medal::Duck, dm);
+        MenuRadioButton(Medal::Duck, dm, type);
 #endif
 
 #if TURBO
-        MenuRadioButton(Medal::SuperTrackmaster, stm);
-        MenuRadioButton(Medal::SuperGold, sg);
-        MenuRadioButton(Medal::SuperSilver, ss);
-        MenuRadioButton(Medal::SuperBronze, sb);
-        MenuRadioButton(Medal::Trackmaster, tm);
+        MenuRadioButton(Medal::SuperTrackmaster, stm, type);
+        MenuRadioButton(Medal::SuperGold, sg, type);
+        MenuRadioButton(Medal::SuperSilver, ss, type);
+        MenuRadioButton(Medal::SuperBronze, sb, type);
+        MenuRadioButton(Medal::Trackmaster, tm, type);
 #else
-        MenuRadioButton(Medal::Author, at);
+        MenuRadioButton(Medal::Author, at, type);
 #endif
 
-        MenuRadioButton(Medal::Gold, gt);
-        MenuRadioButton(Medal::Silver, st);
-        MenuRadioButton(Medal::Bronze, bt);
-        MenuRadioButton(Medal::Finish, 0);
+        MenuRadioButton(Medal::Gold, gt, type);
+        MenuRadioButton(Medal::Silver, st, type);
+        MenuRadioButton(Medal::Bronze, bt, type);
+        MenuRadioButton(Medal::Finish, 0, type);
 
-        MenuRadioButton(Medal::Custom, S_Custom);
+        MenuRadioButton(Medal::Custom, S_Custom, type);
         UI::BeginDisabled(S_Medal != Medal::Custom);
         UI::SetNextItemWidth(UI::GetScale() * 200.0f);
-        S_Custom = Math::Clamp(UI::InputInt(GetMapTypeCustomUnit() + "##input-custom", S_Custom), 0, MAX_INT);
+        S_Custom = Math::Clamp(UI::InputInt(GetCustomUnit(type) + "##input-custom", S_Custom), 0, MAX_INT);
         UI::EndDisabled();
 
         UI::EndMenu();

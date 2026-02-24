@@ -39,12 +39,31 @@ enum Medal {
     None             = 14
 }
 
+string FormatTime(const uint time, const MapType type) {
+    switch (type) {
+        case MapType::Stunt:
+        case MapType::Platform:
+            return tostring(time);
+    }
+    return Time::Format(time);
+}
+
 uint GetChampionTime() {
 #if DEPENDENCY_CHAMPIONMEDALS
     return ChampionMedals::GetCMTime();
 #else
     return 0;
 #endif
+}
+
+string GetCustomUnit(const MapType type) {
+#if !TURBO
+    switch (type) {
+        case MapType::Stunt:    return "points";
+        case MapType::Platform: return "respawns";
+    }
+#endif
+    return "ms";
 }
 
 uint GetDuckTime() {
@@ -92,16 +111,6 @@ MapType GetMapType() {
     // TODO stunt/platform on forever
 
     return MapType::Race;
-}
-
-string GetMapTypeCustomUnit() {
-#if !TURBO
-    switch (GetMapType()) {
-        case MapType::Stunt:    return "points";
-        case MapType::Platform: return "respawns";
-    }
-#endif
-    return "ms";
 }
 
 vec3 GetMedalColor(const Medal medal) {
@@ -194,10 +203,6 @@ uint GetMedalTime(const Medal medal) {
         default:
             return 0;
     }
-}
-
-string GetMedalTimeText(const string&in name, const uint time) {
-    return name + (time > 0 ? " (" + Time::Format(time) + ")" : "");  // TODO stunt/platform
 }
 
 uint GetPB() {
@@ -492,7 +497,7 @@ Medal GetPBMedal() {
     }
 }
 
-uint GetTargetTime() {
+uint GetTargetTime() {  // TODO change target when medal doesn't exist
     return GetMedalTime(S_Medal);
 }
 
@@ -518,7 +523,7 @@ bool InMap() {
     ;
 }
 
-void MenuRadioButton(const Medal medal, const uint time) {
+void MenuRadioButton(const Medal medal, const uint time, const MapType type) {
     const vec4 color = vec4(GetMedalColor(medal), 1.0f);
     UI::PushStyleColor(UI::Col::CheckMark, color);
     UI::PushStyleColor(UI::Col::Text,      color);
@@ -527,9 +532,26 @@ void MenuRadioButton(const Medal medal, const uint time) {
         and medal != Medal::Custom
         and medal != Medal::Finish
         and time == 0
+#if !TURBO
+        and type != MapType::Platform
+#endif
         and InMap()
     );
-    if (UI::RadioButton(GetMedalTimeText(tostring(medal), time), S_Medal == medal)) {
+
+    const bool showTime = false
+        or time > 0
+#if !TURBO
+        or (true
+            and type == MapType::Platform
+            and medal == Medal::Author
+        )
+#endif
+    ;
+
+    if (UI::RadioButton(
+        tostring(medal) + (showTime ? " (" + FormatTime(time, type) + ")" : ""),
+        S_Medal == medal
+    )) {
         S_Medal = medal;
     }
     UI::EndDisabled();
@@ -542,28 +564,61 @@ void Notify(const string&in msg, const vec3&in color = vec3()) {
     UI::ShowNotification(pluginTitle, msg, vec4(color, 1.0f));
 }
 
-void NotifyAchieved(const uint pb, const uint target) {
+void NotifyAchieved(const uint pb, const uint target, const MapType type) {
+#if !TURBO
+    if (type == MapType::Stunt) {
+        Notify(
+            "congrats! " + tostring(S_Medal) + " achieved by " + tostring(pb - target),
+            GetMedalColor(S_Medal)
+        );
+        return;
+    }
+#endif
+
     Notify(
-        "congrats! " + tostring(S_Medal) + " achieved by " + Time::Format(target - pb),
+        "congrats! " + tostring(S_Medal) + " achieved by " + FormatTime(target - pb, type),
         GetMedalColor(S_Medal)
     );
 }
 
-void NotifyOnEnter(const uint pb, const uint target) {
+void NotifyOnEnter(const uint pb) {
+    const uint target = GetTargetTime();
+    const MapType type = GetMapType();
+
+#if !TURBO
+    if (type == MapType::Stunt) {
+        if (false
+            or pb == MAX_UINT
+            or pb < target
+        ) {
+            Notify(
+                pb == MAX_UINT
+                    ? tostring(S_Medal) + " is " + tostring(target)
+                    : "you still need " + tostring(target - pb) + " for " + tostring(S_Medal)
+            );
+        }
+        return;
+    }
+#endif
+
     if (pb > target) {
         Notify(
             pb == MAX_UINT
-                ? tostring(S_Medal) + " is " + Time::Format(target)
-                : "you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal)
+                ? tostring(S_Medal) + " is " + FormatTime(target, type)
+                : "you still need " + FormatTime(pb - target, type) + " for " + tostring(S_Medal)
         );
     }
 }
 
-void NotifyTooSlow(const uint pb, const uint target) {
-    Notify(
-        "bummer! you still need " + Time::Format(pb - target) + " for " + tostring(S_Medal),
-        vec3(0.8f, 0.5f, 0.0f)
-    );
+void NotifyTooSlow(const uint pb, const uint target, const MapType type) {
+#if !TURBO
+    if (type == MapType::Stunt) {
+        Notify("bummer! you still need " + tostring(target - pb) + " for " + tostring(S_Medal));
+        return;
+    }
+#endif
+
+    Notify("bummer! you still need " + FormatTime(pb - target, type) + " for " + tostring(S_Medal));
 }
 
 uint OnEnteredMap() {
@@ -576,7 +631,7 @@ uint OnEnteredMap() {
         and S_NotifyOnEnter
         and S_Medal != Medal::Finish
     ) {
-        NotifyOnEnter(pb, GetTargetTime());  // TODO change target when medal doesn't exist
+        NotifyOnEnter(pb);
     }
 
     return pb;
