@@ -187,7 +187,7 @@ uint GetMedalTime(const Medal medal) {
 }
 
 string GetMedalTimeText(const string&in name, const uint time) {
-    return name + (time > 0 ? " (" + Time::Format(time) + ")" : "");
+    return name + (time > 0 ? " (" + Time::Format(time) + ")" : "");  // TODO stunt/platform
 }
 
 uint GetPB() {
