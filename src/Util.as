@@ -94,6 +94,16 @@ MapType GetMapType() {
     return MapType::Race;
 }
 
+string GetMapTypeCustomUnit() {
+#if !TURBO
+    switch (GetMapType()) {
+        case MapType::Stunt:    return "points";
+        case MapType::Platform: return "respawns";
+    }
+#endif
+    return "ms";
+}
+
 vec3 GetMedalColor(const Medal medal) {
     switch (medal) {
 #if TMNEXT

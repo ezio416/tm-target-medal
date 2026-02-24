@@ -180,7 +180,7 @@ void RenderMenu() {
         MenuRadioButton(Medal::Custom, S_Custom);
         UI::BeginDisabled(S_Medal != Medal::Custom);
         UI::SetNextItemWidth(UI::GetScale() * 200.0f);
-        S_Custom = Math::Clamp(UI::InputInt("ms", S_Custom), 0, MAX_INT);  // TODO stunt/platform
+        S_Custom = Math::Clamp(UI::InputInt(GetMapTypeCustomUnit() + "##input-custom", S_Custom), 0, MAX_INT);
         UI::EndDisabled();
 
         UI::EndMenu();

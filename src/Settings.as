@@ -81,7 +81,7 @@ void SettingsTab_Main() {
     }
 
     if (S_Medal == Medal::Custom) {
-        S_Custom = Math::Clamp(UI::InputInt("ms", S_Custom), 0, MAX_INT);  // TODO stunt/platform
+        S_Custom = Math::Clamp(UI::InputInt(GetMapTypeCustomUnit() + "##input-custom", S_Custom), 0, MAX_INT);
     }
 
     UI::SeparatorText("Colors");
