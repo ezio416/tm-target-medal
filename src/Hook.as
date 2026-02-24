@@ -36,9 +36,9 @@ void SetPB(const uint ebx, const uint ebp) {
                 and ebx > target
                 and ebp <= target
             ) {
-                NotifyAchieved(ebp, target);
+                NotifyAchieved(ebp, target, MapType::Race);
             } else {
-                NotifyTooSlow(ebp, target);
+                NotifyTooSlow(ebp, target, MapType::Race);
             }
         }
     }

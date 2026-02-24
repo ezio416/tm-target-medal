@@ -40,11 +40,13 @@ enum Medal {
 }
 
 string FormatTime(const uint time, const MapType type) {
+#if !TURBO
     switch (type) {
         case MapType::Stunt:
         case MapType::Platform:
             return tostring(time);
     }
+#endif
     return Time::Format(time);
 }
 
