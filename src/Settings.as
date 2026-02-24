@@ -102,7 +102,7 @@ void SettingsTab_Main() {
     S_ColorWarrior          = UI::InputColor3("Warrior",           S_ColorWarrior);
 #endif
 #if DEPENDENCY_DUCKMEDALS
-    S_ColorChampion         = UI::InputColor3("Duck",              S_ColorDuck);
+    S_ColorDuck             = UI::InputColor3("Duck",              S_ColorDuck);
 #endif
 #if TURBO
     S_ColorSuperTrackmaster = UI::InputColor3("Super Trackmaster", S_ColorSuperTrackmaster);
