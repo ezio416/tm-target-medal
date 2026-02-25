@@ -110,7 +110,14 @@ MapType GetMapType() {
     }
 #endif
 
-    // TODO stunt/platform on forever
+#if FOREVER
+    switch (Map.PlayMode) {
+        case 0: return MapType::Race;
+        case 1: return MapType::Platform;
+        case 2: return MapType::Race;  // puzzle
+        case 5: return MapType::Stunt;
+    }
+#endif
 
     return MapType::Race;
 }
@@ -192,6 +199,13 @@ uint GetMedalTime(const Medal medal) {
 #endif
 #if !TURBO
         case Medal::Author:
+#if FOREVER
+            switch (GetMapType()) {
+                case MapType::Stunt:
+                case MapType::Platform:
+                    return Map.ChallengeParameters.AuthorScore;
+            }
+#endif
             return Map.ChallengeParameters.AuthorTime;
 #endif
         case Medal::Gold:
@@ -337,11 +351,20 @@ uint GetPB() {
 
 #elif FOREVER
     if (Network.PlayerInfo !is null) {
-        // TODO this only returns session pb on servers
-        return Network.PlayerInfo.RaceBestTime;
-    }
+        switch (GetMapType()) {
+            case MapType::Race:
+                // TODO only returns session pb on servers
+                return Network.PlayerInfo.RaceBestTime;
 
-    // TODO stunt, platform
+            case MapType::Platform:
+                return Network.PlayerInfo.MinRespawns;
+
+            case MapType::Stunt:
+                if (Network.PlayerInfo.BestStuntsScore > 0) {
+                    return Network.PlayerInfo.BestStuntsScore;
+                }
+        }
+    }
 
     return MAX_UINT;
 #endif
@@ -354,10 +377,7 @@ Medal GetPBMedal() {
     }
 
     CGameCtnChallenge@ Map = GetMap();
-    if (false
-        or Map is null
-        or Map.ChallengeParameters is null
-    ) {
+    if (Map is null) {
         return Medal::None;
     }
 
@@ -450,20 +470,20 @@ Medal GetPBMedal() {
                 }
             }
 #endif
-            if (pb <= Map.ChallengeParameters.AuthorTime) {
+            if (pb <= GetMedalTime(Medal::Author)) {
 #if TURBO
                 return Medal::Trackmaster;
 #else
                 return Medal::Author;
 #endif
             }
-            if (pb <= Map.ChallengeParameters.GoldTime) {
+            if (pb <= GetMedalTime(Medal::Gold)) {
                 return Medal::Gold;
             }
-            if (pb <= Map.ChallengeParameters.SilverTime) {
+            if (pb <= GetMedalTime(Medal::Silver)) {
                 return Medal::Silver;
             }
-            if (pb <= Map.ChallengeParameters.BronzeTime) {
+            if (pb <= GetMedalTime(Medal::Bronze)) {
                 return Medal::Bronze;
             }
             if (pb < MAX_UINT) {
@@ -476,16 +496,16 @@ Medal GetPBMedal() {
 
 #if !TURBO
         case MapType::Stunt:
-            if (pb >= Map.ChallengeParameters.AuthorTime) {
+            if (pb >= GetMedalTime(Medal::Author)) {
                 return Medal::Author;
             }
-            if (pb >= Map.ChallengeParameters.GoldTime) {
+            if (pb >= GetMedalTime(Medal::Gold)) {
                 return Medal::Gold;
             }
-            if (pb >= Map.ChallengeParameters.SilverTime) {
+            if (pb >= GetMedalTime(Medal::Silver)) {
                 return Medal::Silver;
             }
-            if (pb >= Map.ChallengeParameters.BronzeTime) {
+            if (pb >= GetMedalTime(Medal::Bronze)) {
                 return Medal::Bronze;
             }
             if (pb > 0) {
@@ -545,7 +565,12 @@ void MenuRadioButton(const Medal medal, const uint time, const MapType type) {
 #if !TURBO
         or (true
             and type == MapType::Platform
-            and medal == Medal::Author
+            and (false
+                or medal == Medal::Author
+#if FOREVER
+                or medal == Medal::Gold
+#endif
+            )
         )
 #endif
     ;
