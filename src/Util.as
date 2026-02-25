@@ -470,13 +470,15 @@ Medal GetPBMedal() {
                 }
             }
 #endif
-            if (pb <= GetMedalTime(Medal::Author)) {
 #if TURBO
+            if (pb <= GetMedalTime(Medal::Trackmaster)) {
                 return Medal::Trackmaster;
-#else
-                return Medal::Author;
-#endif
             }
+#else
+            if (pb <= GetMedalTime(Medal::Author)) {
+                return Medal::Author;
+            }
+#endif
             if (pb <= GetMedalTime(Medal::Gold)) {
                 return Medal::Gold;
             }
