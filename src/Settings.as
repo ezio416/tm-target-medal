@@ -135,6 +135,9 @@ void SettingsTab_Debug() {
 #if DEPENDENCY_WARRIORMEDALS
         UI::Text("warrior: " + GetWarriorTime());
 #endif
+#if DEPENDENCY_DUCKMEDALS
+        UI::Text("duck: " + GetDuckTime());
+#endif
 #if TURBO
         UI::Text("super trackmaster: " + GetMedalTime(Medal::SuperTrackmaster));
         UI::Text("super gold: "        + GetMedalTime(Medal::SuperGold));
