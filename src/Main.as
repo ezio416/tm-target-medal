@@ -71,7 +71,13 @@ void Main() {
         }
 
 #elif FOREVER
-        // TODO detect finish sequence
+        auto Network = cast<CTrackManiaNetwork>(App.Network);
+        if (false
+            or Network.PlayerInfo is null
+            or Network.PlayerInfo.RaceState != 2
+        ) {
+            continue;
+        }
 #endif
 
         newPB = GetPB();
