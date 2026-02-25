@@ -16,8 +16,6 @@ void Main() {
 
     auto App = cast<CTrackMania>(GetApp());
 
-    // TODO init all turbo PBs
-
     while (true) {
         yield();
 
