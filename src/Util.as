@@ -645,7 +645,7 @@ void NotifyOnEnter(const uint pb) {
             Notify(
                 pb == MAX_UINT
                     ? tostring(S_Medal) + " is " + tostring(target)
-                    : "you still need " + tostring(target - pb) + " for " + tostring(S_Medal)
+                    : "You still need " + tostring(target - pb) + " for " + tostring(S_Medal)
             );
         }
         return;
@@ -656,7 +656,7 @@ void NotifyOnEnter(const uint pb) {
         Notify(
             pb == MAX_UINT
                 ? tostring(S_Medal) + " is " + FormatTime(target, type)
-                : "you still need " + FormatTime(pb - target, type) + " for " + tostring(S_Medal)
+                : "You still need " + FormatTime(pb - target, type) + " for " + tostring(S_Medal)
         );
     }
 }
@@ -664,12 +664,12 @@ void NotifyOnEnter(const uint pb) {
 void NotifyTooSlow(const uint pb, const uint target, const MapType type) {
 #if !TURBO
     if (type == MapType::Stunt) {
-        Notify("bummer! you still need " + tostring(target - pb) + " for " + tostring(S_Medal));
+        Notify("Bummer! You still need " + tostring(target - pb) + " for " + tostring(S_Medal));
         return;
     }
 #endif
 
-    Notify("bummer! you still need " + FormatTime(pb - target, type) + " for " + tostring(S_Medal));
+    Notify("Bummer! You still need " + FormatTime(pb - target, type) + " for " + tostring(S_Medal));
 }
 
 uint OnEnteredMap() {
