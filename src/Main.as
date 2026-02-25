@@ -27,8 +27,6 @@ void Main() {
 
             if (inMap) {
                 lastPB = OnEnteredMap();
-            } else {
-                // TODO handle plugin medals
             }
         }
 
@@ -128,27 +126,6 @@ void OnDisabled() { UnhookSetPB(); }
 void OnEnabled() { HookSetPB(); }
 #endif
 
-// void Render() {
-//     if (false
-//         or !S_Enabled
-//         or (true
-//             and S_HideWithGame
-//             and !UI::IsGameUIVisible()
-//         )
-//         or (true
-//             and S_HideWithOP
-//             and !UI::IsOverlayShown()
-//         )
-//     ) {
-//         return;
-//     }
-
-//     if (UI::Begin(pluginTitle + "###main-" + pluginMeta.ID, S_Enabled)) {
-//         RenderWindow();
-//     }
-//     UI::End();
-// }
-
 void RenderMenu() {
     if (UI::BeginMenu(pluginTitle)) {
         S_Enabled = UI::Checkbox("Enabled", S_Enabled);
@@ -218,8 +195,4 @@ void RenderMenu() {
 
         UI::EndMenu();
     }
-}
-
-void RenderWindow() {
-    // TODO
 }
