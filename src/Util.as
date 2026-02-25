@@ -571,7 +571,13 @@ void MenuRadioButton(const Medal medal, const uint time, const MapType type) {
         and medal != Medal::Finish
         and time == 0
 #if !TURBO
-        and type != MapType::Platform
+        and (false
+            or type != MapType::Platform
+#if TMNEXT
+            or medal == Medal::Champion
+            or medal == Medal::Warrior
+#endif
+        )
 #endif
         and InMap()
     );
