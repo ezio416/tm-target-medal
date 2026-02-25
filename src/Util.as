@@ -626,6 +626,16 @@ void NotifyOnEnter(const uint pb) {
     const uint target = GetTargetTime();
     const MapType type = GetMapType();
 
+    if (true
+        and target == 0
+#if !TURBO
+        and type != MapType::Stunt
+        and type != MapType::Platform
+#endif
+    ) {
+        return;
+    }
+
 #if !TURBO
     if (type == MapType::Stunt) {
         if (false
