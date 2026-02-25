@@ -312,7 +312,9 @@ uint GetPB() {
     }
 #endif
 
+#if !TMNEXT
     return MAX_UINT;
+#endif
 }
 
 #if TURBO
