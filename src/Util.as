@@ -294,22 +294,53 @@ uint GetPB() {
         }
     }
 
-    return MAX_UINT;
+#elif FOREVER
+    if (Network.PlayerInfo !is null) {
+        switch (GetMapType()) {
+            case MapType::Race:
+                // TODO only returns session pb on servers
+                return Network.PlayerInfo.RaceBestTime;
 
-#elif TURBO
+            case MapType::Platform:
+                return Network.PlayerInfo.MinRespawns;
+
+            case MapType::Stunt:
+                if (Network.PlayerInfo.BestStuntsScore > 0) {
+                    return Network.PlayerInfo.BestStuntsScore;
+                }
+        }
+    }
+#endif
+
+    return MAX_UINT;
+}
+
+#if TURBO
+uint GetPBAsync() {
+    auto App = cast<CTrackMania>(GetApp());
+    auto Network = cast<CTrackManiaNetwork>(App.Network);
+
     if (true
         and Network.PlayerInfo !is null
         and Network.TmRaceRules !is null
         and Network.TmRaceRules.DataMgr !is null
     ) {
-        // this function requires yielding after but we call it anyway so its data is ready on the next frame
-        // using an async system just for turbo pb felt too complicated, might change later
-        // this whole block is very inefficient but works I guess
-        Network.TmRaceRules.DataMgr.RetrieveRecordsNoMedals(App.Challenge.EdChallengeId, Network.PlayerInfo.Id);
-
         uint pb = MAX_UINT;
         if (turboPb.Exists(App.Challenge.EdChallengeId)) {
             turboPb.Get(App.Challenge.EdChallengeId, pb);
+        }
+
+        while (!Network.TmRaceRules.DataMgr.Ready) {
+            yield();
+
+            if (false
+                or Network.PlayerInfo is null
+                or Network.TmRaceRules is null
+                or Network.TmRaceRules.DataMgr is null
+            ) {
+                warn("something went null");
+                return pb;
+            }
         }
 
         for (int i = Network.TmRaceRules.DataMgr.Ghosts.Length - 1; i >= 0; i--) {
@@ -348,27 +379,8 @@ uint GetPB() {
     }
 
     return MAX_UINT;
-
-#elif FOREVER
-    if (Network.PlayerInfo !is null) {
-        switch (GetMapType()) {
-            case MapType::Race:
-                // TODO only returns session pb on servers
-                return Network.PlayerInfo.RaceBestTime;
-
-            case MapType::Platform:
-                return Network.PlayerInfo.MinRespawns;
-
-            case MapType::Stunt:
-                if (Network.PlayerInfo.BestStuntsScore > 0) {
-                    return Network.PlayerInfo.BestStuntsScore;
-                }
-        }
-    }
-
-    return MAX_UINT;
-#endif
 }
+#endif
 
 Medal GetPBMedal() {
     const uint pb = GetPB();
@@ -653,15 +665,26 @@ void NotifyTooSlow(const uint pb, const uint target, const MapType type) {
 uint OnEnteredMap() {
     print("OnEnteredMap");
 
-    const uint pb = GetPB();  // TODO doesn't always work on turbo
+    const uint pb = GetPB();
 
     if (true
         and S_Enabled
         and S_NotifyOnEnter
         and S_Medal != Medal::Finish
     ) {
+#if TURBO
+        startnew(OnEnteredMapAsync);
+#else
         NotifyOnEnter(pb);
+#endif
     }
 
     return pb;
 }
+
+#if TURBO
+void OnEnteredMapAsync() {
+    print("OnEnteredMapAsync");
+    NotifyOnEnter(GetPBAsync());
+}
+#endif
