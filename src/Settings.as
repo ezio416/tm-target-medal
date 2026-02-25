@@ -109,6 +109,7 @@ void SettingsTab_Main() {
     S_ColorSuperGold        = UI::InputColor3("Super Gold",        S_ColorSuperGold);
     S_ColorSuperSilver      = UI::InputColor3("Super Silver",      S_ColorSuperSilver);
     S_ColorSuperBronze      = UI::InputColor3("Super Bronze",      S_ColorSuperBronze);
+    S_ColorTrackmaster      = UI::InputColor3("Trackmaster",       S_ColorTrackmaster);
 #else
     S_ColorAuthor           = UI::InputColor3("Author",            S_ColorAuthor);
 #endif
