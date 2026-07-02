@@ -81,6 +81,18 @@ void Main() {
         if (lastPB != newPB) {
             target = GetTargetTime();
 
+            if (type == MapType::Stunt) {
+                if (lastPB >= target) {
+                    continue;
+                }
+            } else {
+                if (lastPB <= target) {
+                    continue;
+                }
+            }
+
+            print("last: " + Time::Format(lastPB) + ", new: " + Time::Format(newPB) + ", target: " + Time::Format(target));
+
             if (newPB == MAX_UINT) {
                 lastPB = newPB;
                 continue;
