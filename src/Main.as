@@ -91,8 +91,6 @@ void Main() {
                 }
             }
 
-            print("last: " + Time::Format(lastPB) + ", new: " + Time::Format(newPB) + ", target: " + Time::Format(target));
-
             if (newPB == MAX_UINT) {
                 lastPB = newPB;
                 continue;
